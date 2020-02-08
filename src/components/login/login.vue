@@ -39,6 +39,8 @@ export default {
       const res = await this.$http.post('/login', this.formdata)
       console.log(res)
       if (res.data.code === 'SUCCESS') {
+        // 登录成功，保存token
+        // localStorage.setItem("token",res.data.token)
         this.$router.push({ name: 'home' })
         // console.log('ok')
         this.$message.success(res.data.message)
