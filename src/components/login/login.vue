@@ -37,6 +37,18 @@ export default {
     handleLogin () {
       this.$http.post('/login', this.formdata).then(res => {
         console.log(res)
+        console.log(res.data.code)
+        // const { data } = res.data
+        // console.log('---')
+        // const { data: {code, message} } = res.data
+
+        if (res.data.code === 'SUCCESS') {
+          // this.$router.push({ name: 'home' })
+          // console.log('ok')
+          this.$message.success(res.data.message)
+        } else {
+          this.$message.error(res.data.message)
+        }
       })
     }
   }
