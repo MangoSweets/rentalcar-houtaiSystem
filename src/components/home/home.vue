@@ -41,9 +41,9 @@
               <span>角色列表</span>
             </el-menu-item>
             <el-menu-item index="2-2">
-                <i class="el-icon-menu"></i>
-                <span>权限列表</span>
-              </el-menu-item>
+              <i class="el-icon-menu"></i>
+              <span>权限列表</span>
+            </el-menu-item>
           </el-submenu>
           <!-- 3 -->
           <el-submenu index="3">
@@ -86,7 +86,15 @@
 </template>
 
 <script>
-export default {}
+export default {
+  // 通过验证token判断是否登录
+//   beforeCreate () {
+//     const token = localStorage.getItem('token')
+//     if (!token) {
+//       this.$router.push({ name: 'login' })
+//     }
+//   }
+}
 </script>
 
 <style>
