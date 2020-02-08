@@ -43,7 +43,7 @@ export default {
         // const { data: {code, message} } = res.data
 
         if (res.data.code === 'SUCCESS') {
-          // this.$router.push({ name: 'home' })
+          this.$router.push({ name: 'home' })
           // console.log('ok')
           this.$message.success(res.data.message)
         } else {
