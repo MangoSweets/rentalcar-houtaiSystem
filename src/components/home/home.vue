@@ -89,6 +89,7 @@
 
 <script>
 export default {
+  name: 'home',
   // 通过验证token判断是否登录
   //   beforeCreate () {
   //     const token = localStorage.getItem('token')

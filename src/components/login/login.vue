@@ -25,6 +25,7 @@
 
 <script>
 export default {
+  name: 'login',
   data () {
     return {
       formdata: {

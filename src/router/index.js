@@ -4,8 +4,6 @@ import Users from '@/components/users/users.vue'
 import Login from '@/components/login/login.vue'
 import Home from '@/components/home/home.vue'
 
-Vue.use(Home)
-Vue.use(Users)
 Vue.use(Router)
 
 export default new Router({
