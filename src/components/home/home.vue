@@ -51,9 +51,9 @@
               <i class="el-icon-location"></i>
               <span>汽车管理</span>
             </template>
-            <el-menu-item index="3-1">
+            <el-menu-item index="carlist">
               <i class="el-icon-menu"></i>
-              <span>选项1</span>
+              <span>汽车列表</span>
             </el-menu-item>
           </el-submenu>
           <!--4-->
