@@ -16,7 +16,9 @@ Vue.use(MyHttpServer)
 
 // 全局过滤器
 Vue.filter('fmtdate', v => {
-  return moment(v).format('YYYY-MM-DD')
+  if (v != null) {
+    return moment(v).format('YYYY-MM-DD')
+  }
 })
 
 /* eslint-disable no-new */

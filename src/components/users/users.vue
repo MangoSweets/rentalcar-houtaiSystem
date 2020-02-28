@@ -45,7 +45,7 @@
       <el-table-column prop="userCreateTime" label="创建日期">
         <template slot-scope="userList">
           <!--  userList.row.userCreatetime userlist的每个对象 会经度有误差 -->
-          {{ userList.userCreateTime | fmtdate }}
+          {{ userList.row.userCreateTime | fmtdate }}
         </template>
       </el-table-column>
       <el-table-column prop="userStatus" label="用户状态">

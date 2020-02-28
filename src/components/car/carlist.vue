@@ -36,11 +36,16 @@
           {{ carList.carCreateTime | fmtdate }}
         </template>
       </el-table-column>
-      <el-table-column prop="productStartTime" label="出厂时间"> </el-table-column>
-      <el-table-column prop="productEndTime" label="到期时间">
+      <el-table-column prop="productStartTime" label="出厂时间">
         <template slot-scope="carList">
           <!--  userList.row.userCreatetime userlist的每个对象 会经度有误差 -->
-          {{ carList.productEndTime | fmtdate }}
+          {{ carList.row.productEndTime | fmtdate }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="productEndTime" label="报废时间">
+        <template slot-scope="carList">
+          <!--  userList.row.userCreatetime userlist的每个对象 会经度有误差 -->
+            {{ carList.row.productEndTime | fmtdate }}
         </template>
       </el-table-column>
       <el-table-column prop="carStatus" label="汽车状态">
@@ -119,14 +124,16 @@
         <el-form-item label="车牌号" :label-width="formLabelWidth">
           <el-input v-model="form.plateNumber"  autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="出厂时间" :label-width="formLabelWidth">
-            <el-date-picker
-            v-model="form.productTimeList"
-            type="daterange"
-            unlink-panels
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期">
+        <el-form-item label="使用寿命" :label-width="formLabelWidth">
+          <el-date-picker
+            v-model="form.productStartTime"
+            type="date"
+            placeholder="出厂日期">
+          </el-date-picker> 至
+          <el-date-picker
+            v-model="form.productEndTime"
+            type="date"
+            placeholder="报废日期">
           </el-date-picker>
         </el-form-item>
       </el-form>
@@ -135,12 +142,30 @@
         <el-button type="primary" @click="addCar()">确 定</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="编辑用户" :visible.sync="dialogFormVisibleEdit">
+      <el-form :model="form">
+        <el-form-item label="用户名" :label-width="formLabelWidth">
+          <el-input disabled v-model="form.username"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号码" :label-width="formLabelWidth">
+          <el-input v-model="form.telephone" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" :label-width="formLabelWidth">
+          <el-input v-model="form.email" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="noEdit()">取 消</el-button>
+        <el-button type="primary" @click="editUser()">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
 <script>
 export default {
-  name: 'carList',
+  name: 'carManager',
   data () {
     return {
       query: '',
@@ -148,13 +173,15 @@ export default {
       pageSize: 2,
       total: -1,
       dialogFormVisibleAdd: false,
+      dialogFormVisibleEdit: false,
       formLabelWidth: '120px',
       carList: [],
       form: {
         seriesId: '',
         carType: '',
         plateNumber: '',
-        productTimeList: []
+        productStartTime: '',
+        productEndTime: ''
       },
       carTypeList: [{
         value: '新能源',
@@ -199,6 +226,7 @@ export default {
     async addCar () {
       console.log(this.form)
       // this.getSeriesMap()
+      // this.form
       const res = await this.$http.post(`/car/addcar`, this.form)
       if (res.data.code === 'SUCCESS') {
         this.$message.success('添加成功')
