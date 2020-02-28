@@ -16,12 +16,12 @@
           class="inputSearch"
         >
           <el-button
-            @click="searchCar()"
+            @click="searchCarForSeriesName()"
             slot="append"
             icon="el-icon-search"
           ></el-button>
         </el-input>
-        <el-button type="success" @click="dialogFormVisibleAdd = true"
+        <el-button type="success" @click="showCarAddDialog()"
           >添加汽车</el-button>
       </el-row>
     </el-row>
@@ -93,10 +93,18 @@
     :total="total">
   </el-pagination>
 
-    <el-dialog title="添加汽车" :visible.sync="dialogFormVisibleAdd"  width="30%" center top="20">
-      <el-form :model="form">
+    <el-dialog title="添加汽车" :visible.sync="dialogFormVisibleAdd"   width="30%" center top="20">
+      <el-form :model="form" :rules="carAddRules">
         <el-form-item label="系列名" :label-width="formLabelWidth">
-          <el-input v-model="form.seriesName"  autocomplete="off"></el-input>
+          <!-- <el-input v-model="form.seriesName"  autocomplete="off"></el-input> -->
+          <el-select v-model="form.seriesId" placeholder="请选择">
+            <el-option
+              v-for="item in seriesMap"
+              :key="item.seriesId"
+              :label="item.seriesName"
+              :value="item.seriesId">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="汽车类型" :label-width="formLabelWidth">
           <el-select v-model="form.carType" placeholder="请选择">
@@ -143,7 +151,7 @@ export default {
       formLabelWidth: '120px',
       carList: [],
       form: {
-        seriesName: '',
+        seriesId: '',
         carType: '',
         plateNumber: '',
         productTimeList: []
@@ -155,18 +163,32 @@ export default {
       {
         value: '燃油型',
         label: '燃油型'
-      }]
+      }],
+      seriesMap: new Map(),
+      carAddRules: {
+        seriesId: [{required: true, message: '请选择系列', trigger: 'blur'}]
+      }
     }
   },
   created () {
     this.getCarList()
   },
   methods: {
+    searchCarForSeriesName () {
+      this.getCarList()
+    },
+    showCarAddDialog () {
+      this.getSeriesMap()
+      this.dialogFormVisibleAdd = true
+    },
     async getSeriesMap () {
       const res = await this.$http.get(`/series/getSeriesIdAndName`)
       console.log(res)
-      // if (res.data.code === 'SUCCESS') {
-      // }
+      // console.log(res.data.data)
+      // console.log(this.seriesMap)
+      if (res.data.code === 'SUCCESS') {
+        this.seriesMap = res.data.data
+      }
     },
     async changeStatus (car) {
       const res = await this.$http.get(`/car/changestatus?status=${car.carStatus}&carId=${car.carId}`)
@@ -175,16 +197,17 @@ export default {
       }
     },
     async addCar () {
-      // console.log(this.form)
-      this.getSeriesMap()
-      // const res = await this.$http.post(`/car/addcar`, this.form)
-      // if (res.data.code === 'SUCCESS') {
-      //   this.$message.success('添加成功')
-      //   this.getCarList()
-      //   this.form = {}
-      // } else {
-      //   this.$message.warning('添加失败')
-      // }
+      console.log(this.form)
+      // this.getSeriesMap()
+      const res = await this.$http.post(`/car/addcar`, this.form)
+      if (res.data.code === 'SUCCESS') {
+        this.$message.success('添加成功')
+        this.getCarList()
+        this.form = {}
+        this.dialogFormVisibleAdd = false
+      } else {
+        this.$message.warning('添加失败')
+      }
     },
     loadCarList () {
       this.getCarList()
