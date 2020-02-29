@@ -186,6 +186,8 @@ export default {
         this.getUserList()
         this.dialogFormVisibleEdit = false
         this.$message.success('编辑成功')
+      } else {
+        this.$message.warning('编辑失败')
       }
     },
     showEditUserDia (user) {

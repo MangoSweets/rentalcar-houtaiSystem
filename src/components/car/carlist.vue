@@ -62,7 +62,7 @@
       <el-table-column prop="name" label="操作" width="180">
         <template slot-scope="scope">
           <el-button
-            @click="showEditUserDia(scope.row)"
+            @click="showEditCarDia(scope.row)"
             size="mini"
             plain
             type="primary"
@@ -98,7 +98,7 @@
     :total="total">
   </el-pagination>
 
-    <el-dialog title="添加汽车" :visible.sync="dialogFormVisibleAdd"   width="30%" center top="20">
+    <el-dialog title="添加" :visible.sync="dialogFormVisibleAdd"   width="30%" center top="20">
       <el-form :model="form" :rules="carAddRules">
         <el-form-item label="系列名" :label-width="formLabelWidth">
           <!-- <el-input v-model="form.seriesName"  autocomplete="off"></el-input> -->
@@ -143,21 +143,48 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="编辑用户" :visible.sync="dialogFormVisibleEdit">
-      <el-form :model="form">
-        <el-form-item label="用户名" :label-width="formLabelWidth">
-          <el-input disabled v-model="form.username"  autocomplete="off"></el-input>
+    <el-dialog title="编辑" :visible.sync="dialogFormVisibleEdit"   width="30%" center top="20">
+      <el-form :model="form" :rules="carAddRules">
+        <el-form-item label="系列名" :label-width="formLabelWidth">
+          <!-- <el-input v-model="form.seriesName"  autocomplete="off"></el-input> -->
+          <el-select v-model="form.seriesId" placeholder="请选择">
+            <el-option
+              v-for="item in seriesMap"
+              :key="item.seriesId"
+              :label="item.seriesName"
+              :value="item.seriesId">
+            </el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="手机号码" :label-width="formLabelWidth">
-          <el-input v-model="form.telephone" autocomplete="off"></el-input>
+        <el-form-item label="汽车类型" :label-width="formLabelWidth">
+          <el-select v-model="form.carType" placeholder="请选择">
+            <el-option
+              v-for="item in carTypeList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="邮箱" :label-width="formLabelWidth">
-          <el-input v-model="form.email" autocomplete="off"></el-input>
+        <el-form-item label="车牌号" :label-width="formLabelWidth">
+          <el-input v-model="form.plateNumber"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="使用寿命" :label-width="formLabelWidth">
+          <el-date-picker
+            v-model="form.productStartTime"
+            type="date"
+            placeholder="出厂日期">
+          </el-date-picker> 至
+          <el-date-picker
+            v-model="form.productEndTime"
+            type="date"
+            placeholder="报废日期">
+          </el-date-picker>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="noEdit()">取 消</el-button>
-        <el-button type="primary" @click="editUser()">确 定</el-button>
+        <el-button type="primary" @click="editCar()">确 定</el-button>
       </div>
     </el-dialog>
   </el-card>
@@ -191,21 +218,51 @@ export default {
         value: '燃油型',
         label: '燃油型'
       }],
-      seriesMap: new Map(),
+      seriesMap: [],
       carAddRules: {
         seriesId: [{required: true, message: '请选择系列', trigger: 'blur'}]
-      }
+      },
+      seriesId: ''
     }
   },
   created () {
     this.getCarList()
+    this.getSeriesMap()
   },
   methods: {
+    getSeriesIdForSeriesName (seriesName) {
+      // this.getSeriesMap()
+      console.log('qqq ' + seriesName)
+      this.seriesMap.foreach((item) => {
+        // if (item.series)
+        console.log(item.seriesName)
+      })
+    },
+    showEditCarDia (user) {
+      // console.log(user)
+      // this.getSeriesIdForSeriesName(user.seriesName)
+      this.dialogFormVisibleEdit = true
+      this.form = user
+    },
+    noEdit () {
+      this.dialogFormVisibleEdit = false
+      this.form = {}
+    },
+    async editCar () {
+      const res = await this.$http.post(`/car/update`, this.form)
+      console.log(res)
+      if (res.data.code === 'SUCCESS') {
+        this.getCarList()
+        this.dialogFormVisibleEdit = false
+        this.$message.success('编辑成功')
+      } else {
+        this.$message.warning('编辑失败')
+      }
+    },
     searchCarForSeriesName () {
       this.getCarList()
     },
     showCarAddDialog () {
-      this.getSeriesMap()
       this.dialogFormVisibleAdd = true
     },
     async getSeriesMap () {
@@ -227,7 +284,7 @@ export default {
       console.log(this.form)
       // this.getSeriesMap()
       // this.form
-      const res = await this.$http.post(`/car/addcar`, this.form)
+      const res = await this.$http.post(`/car/add`, this.form)
       if (res.data.code === 'SUCCESS') {
         this.$message.success('添加成功')
         this.getCarList()
