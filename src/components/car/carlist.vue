@@ -70,7 +70,7 @@
             circle
           ></el-button>
           <el-button
-            @click="showDeleteUserMsgBox(scope.row.userId)"
+            @click="showDeleteCarMsgBox(scope.row.carId)"
             size="mini"
             plain
             type="danger"
@@ -92,7 +92,7 @@
     @size-change="handleSizeChange"
     @current-change="handleCurrentChange"
     :current-page="pageNum"
-    :page-sizes="[1, 2, 4, 8]"
+    :page-sizes="[2, 4, 6, 8]"
     :page-size="2"
     layout="total, sizes, prev, pager, next, jumper"
     :total="total">
@@ -230,6 +230,31 @@ export default {
     this.getSeriesMap()
   },
   methods: {
+    showDeleteCarMsgBox (carId) {
+      this.$confirm('是否删除该用户?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async () => {
+          const res = await this.$http.get(`/car/delete?carId=${carId}`)
+          console.log(res)
+          if (res.data.code === 'SUCCESS') {
+            this.pageNum = 1
+            this.getCarList()
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    },
     getSeriesIdForSeriesName (seriesName) {
       // this.getSeriesMap()
       console.log('qqq ' + seriesName)
@@ -263,6 +288,7 @@ export default {
       this.getCarList()
     },
     showCarAddDialog () {
+      this.form = ''
       this.dialogFormVisibleAdd = true
     },
     async getSeriesMap () {
