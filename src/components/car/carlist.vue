@@ -25,7 +25,7 @@
           >添加汽车</el-button>
       </el-row>
     </el-row>
-    <el-table :data="carList" style="width: 100%">
+    <el-table :data="carList">
       <el-table-column type="index" label="#" width="60"> </el-table-column>
       <el-table-column prop="seriesName" label="系列名" width="100"></el-table-column>
       <el-table-column prop="carType" label="汽车类型" width="100"></el-table-column>
@@ -220,7 +220,7 @@ export default {
       }],
       seriesMap: [],
       carAddRules: {
-        seriesId: [{required: true, message: '请选择系列', trigger: 'blur'}]
+        seriesId: [{required: true, message: '请选择系列', trigger: 'change'}]
       },
       seriesId: ''
     }
@@ -288,7 +288,7 @@ export default {
       this.getCarList()
     },
     showCarAddDialog () {
-      this.form = ''
+      this.form = {}
       this.dialogFormVisibleAdd = true
     },
     async getSeriesMap () {

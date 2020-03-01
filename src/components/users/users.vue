@@ -28,7 +28,7 @@
       </el-row>
     </el-row>
     <!-- 表格 -->
-    <el-table :data="userList" style="width: 100%">
+    <el-table :data="userList">
       <el-table-column type="index" label="#" width="60"> </el-table-column>
       <el-table-column prop="username" label="用户名" width="80">
       </el-table-column>
@@ -187,7 +187,7 @@ export default {
         this.dialogFormVisibleEdit = false
         this.$message.success('编辑成功')
       } else {
-        this.$message.warning('编辑失败')
+        this.$message.success('编辑失败')
       }
     },
     showEditUserDia (user) {

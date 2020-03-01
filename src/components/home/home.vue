@@ -55,6 +55,10 @@
               <i class="el-icon-menu"></i>
               <span>汽车列表</span>
             </el-menu-item>
+            <el-menu-item index="seriesList">
+              <i class="el-icon-menu"></i>
+              <span>系列列表</span>
+            </el-menu-item>
           </el-submenu>
           <!--4-->
           <el-submenu index="4">

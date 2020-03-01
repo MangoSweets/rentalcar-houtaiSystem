@@ -4,6 +4,7 @@ import Users from '@/components/users/users.vue'
 import Login from '@/components/login/login.vue'
 import Home from '@/components/home/home.vue'
 import CarList from '@/components/car/carlist.vue'
+import SeriesList from '@/components/car/seriesList.vue'
 
 Vue.use(Router)
 
@@ -28,6 +29,11 @@ export default new Router({
           name: 'carlist',
           path: '/carlist',
           component: CarList
+        },
+        {
+          name: 'seriesList',
+          path: '/seriesList',
+          component: SeriesList
         }
       ]
     }

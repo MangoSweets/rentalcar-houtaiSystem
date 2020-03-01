@@ -1,0 +1,380 @@
+<template>
+  <el-card class="box-card">
+    <!-- 面包屑 -->
+    <el-breadcrumb separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item>首页</el-breadcrumb-item>
+      <el-breadcrumb-item>汽车管理</el-breadcrumb-item>
+      <el-breadcrumb-item>系列列表</el-breadcrumb-item>
+    </el-breadcrumb>
+    <el-row class="searchRow">
+      <el-row>
+        <el-input
+          @clear="loadSeriesList()"
+          placeholder="请输入内容"
+          clearable
+          v-model="query"
+          class="inputSearch"
+        >
+          <el-button
+            @click="searchSeriesForSeriesName()"
+            slot="append"
+            icon="el-icon-search"
+          ></el-button>
+        </el-input>
+        <el-button type="success" @click="showSeriesAddDialog()">添加系列</el-button>
+      </el-row>
+    </el-row>
+    <el-table :data="seriesList">
+      <el-table-column type="index" label="#" width="60"> </el-table-column>
+      <el-table-column prop="brand" label="品牌名" width="100"></el-table-column>
+      <el-table-column prop="seriesname" label="系列名" width="100"></el-table-column>
+      <el-table-column prop="doors" label="车门数" width="120"> </el-table-column>
+      <el-table-column prop="skylight" label="天窗" width="120"> </el-table-column>
+      <el-table-column prop="airsac" label="气囊数" width="120"> </el-table-column>
+      <el-table-column prop="seatType" label="座椅类型" width="120"> </el-table-column>
+      <el-table-column prop="fuelTank" label="油箱容量" width="120"> </el-table-column>
+      <el-table-column prop="seatNumber" label="座位数" width="120"> </el-table-column>
+      <el-table-column prop="fuelType" label="燃料类型" width="120"> </el-table-column>
+      <el-table-column prop="radar" label="雷达" width="120"> </el-table-column>
+      <el-table-column prop="fulelabel" label="燃油标号" width="120"> </el-table-column>
+      <el-table-column prop="drivingMode" label="驱动方式" width="120"> </el-table-column>
+      <el-table-column prop="transmissionType" label="变速箱类型" width="120"> </el-table-column>
+      <el-table-column prop="voiceboxs" label="音箱个数" width="120"> </el-table-column>
+      <el-table-column prop="seriesCreater" label="引进人" width="120"> </el-table-column>
+      <el-table-column prop="seriesCreateTime" label="引进时间">
+        <template slot-scope="seriesList">
+          {{ seriesList.row.seriesCreateTime | fmtdate }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="seriesUpdater" label="更新人" width="120"> </el-table-column>
+      <el-table-column prop="seriesUpdateTime" label="更新时间">
+        <template slot-scope="seriesList">
+          <!--  userList.row.userCreatetime userlist的每个对象 会经度有误差 -->
+          {{ seriesList.row.seriesUpdateTime | fmtdate }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="seriesStatus" label="系列状态">
+        <template slot-scope="scope">
+          <el-switch
+            @change="changeStatus(scope.row)"
+            v-model="scope.row.seriesStatus"
+            active-color="#13ce66"
+            inactive-color="#ff4949">
+          </el-switch>
+        </template>
+
+      </el-table-column>
+      <el-table-column prop="name" label="操作" width="180">
+        <template slot-scope="scope">
+          <el-button
+            @click="showEditCarDia(scope.row)"
+            size="mini"
+            plain
+            type="primary"
+            icon="el-icon-edit"
+            circle
+          ></el-button>
+          <el-button
+            @click="showDeleteSeriesMsgBox(scope.row.seriesId)"
+            size="mini"
+            plain
+            type="danger"
+            icon="el-icon-delete"
+            circle
+          ></el-button>
+          <el-button
+            size="mini"
+            plain
+            type="success"
+            icon="el-icon-check"
+            circle
+          ></el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <el-pagination
+    @size-change="handleSizeChange"
+    @current-change="handleCurrentChange"
+    :current-page="pageNum"
+    :page-sizes="[2, 4, 6, 8]"
+    :page-size="2"
+    layout="total, sizes, prev, pager, next, jumper"
+    :total="total">
+  </el-pagination>
+
+    <el-dialog title="添加" :visible.sync="dialogFormVisibleAdd"  width="30%" center top="20">
+      <el-form :model="form">
+        <el-form-item label="品牌名" :label-width="formLabelWidth">
+          <el-input v-model="form.brand"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="系列名" :label-width="formLabelWidth">
+          <el-input v-model="form.seriesName"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="车门数" :label-width="formLabelWidth">
+          <el-input v-model="form.doors"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="天窗" :label-width="formLabelWidth">
+          <el-select v-model="form.skylight" placeholder="请选择">
+            <el-option label="有"  value="true"> </el-option>
+            <el-option label="无"  value="false"> </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="气囊数" :label-width="formLabelWidth">
+          <el-input v-model="form.airsac"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="座椅类型" :label-width="formLabelWidth">
+          <!-- <el-input v-model="form.seatType"  autocomplete="off"></el-input> -->
+          <el-select v-model="form.seatType" placeholder="请选择">
+            <el-option label="真皮"  value="真皮"> </el-option>
+            <el-option label="织物"  value="织物"> </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="油箱容量" :label-width="formLabelWidth">
+          <el-input v-model="form.fuelTank"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="座位数" :label-width="formLabelWidth">
+          <el-input v-model="form.seatNumber"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="燃料类型" :label-width="formLabelWidth">
+          <el-input v-model="form.fuelType"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="倒车雷达" :label-width="formLabelWidth">
+          <el-input v-model="form.radar"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="燃油标号" :label-width="formLabelWidth">
+          <el-input v-model="form.fulelabel"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="驱动方式" :label-width="formLabelWidth">
+          <el-input v-model="form.drivingMode"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="变速箱类型" :label-width="formLabelWidth">
+          <el-input v-model="form.transmissionType"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="排量" :label-width="formLabelWidth">
+          <el-input v-model="form.displacement"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="音箱个数" :label-width="formLabelWidth">
+          <el-input v-model="form.voiceboxs"  autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleAdd = false">取 消</el-button>
+        <el-button type="primary" @click="addSeries()">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog title="编辑" :visible.sync="dialogFormVisibleEdit"  width="30%" center top="20">
+      <el-form :model="form">
+        <el-form-item label="品牌名" :label-width="formLabelWidth">
+          <el-input v-model="form.brand"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="系列名" :label-width="formLabelWidth">
+          <el-input v-model="form.seriesName"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="车门数" :label-width="formLabelWidth">
+          <el-input v-model="form.doors"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="天窗" :label-width="formLabelWidth">
+          <el-select v-model="form.skylight" placeholder="请选择">
+            <el-option label="有"  value="true"> </el-option>
+            <el-option label="无"  value="false"> </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="气囊数" :label-width="formLabelWidth">
+          <el-input v-model="form.airsac"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="座椅类型" :label-width="formLabelWidth">
+          <!-- <el-input v-model="form.seatType"  autocomplete="off"></el-input> -->
+          <el-select v-model="form.seatType" placeholder="请选择">
+            <el-option label="真皮"  value="真皮"> </el-option>
+            <el-option label="织物"  value="织物"> </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="油箱容量" :label-width="formLabelWidth">
+          <el-input v-model="form.fuelTank"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="座位数" :label-width="formLabelWidth">
+          <el-input v-model="form.seatNumber"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="燃料类型" :label-width="formLabelWidth">
+          <el-input v-model="form.fuelType"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="倒车雷达" :label-width="formLabelWidth">
+          <el-input v-model="form.radar"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="燃油标号" :label-width="formLabelWidth">
+          <el-input v-model="form.fulelabel"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="驱动方式" :label-width="formLabelWidth">
+          <el-input v-model="form.drivingMode"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="变速箱类型" :label-width="formLabelWidth">
+          <el-input v-model="form.transmissionType"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="排量" :label-width="formLabelWidth">
+          <el-input v-model="form.displacement"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="音箱个数" :label-width="formLabelWidth">
+          <el-input v-model="form.voiceboxs"  autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleEdit = false">取 消</el-button>
+        <el-button type="primary" @click="editSeries()">确 定</el-button>
+      </div>
+    </el-dialog>
+
+  </el-card>
+</template>
+
+<script>
+export default {
+  name: 'seriesManager',
+  data () {
+    return {
+      query: '',
+      pageNum: 1,
+      pageSize: 2,
+      total: -1,
+      dialogFormVisibleAdd: false,
+      dialogFormVisibleEdit: false,
+      formLabelWidth: '120px',
+      seriesList: [],
+      form: {
+        brand: '',
+        seriesName: '',
+        doors: '',
+        skylight: '',
+        airsac: '',
+        seatType: '',
+        fuelTank: '',
+        seatNumber: '',
+        fuelType: '',
+        radar: '',
+        fulelabel: '',
+        drivingMode: '',
+        transmissionType: '',
+        displacement: '',
+        voiceboxs: '',
+        seriesStatus: ''
+      }
+    }
+  },
+  created () {
+    this.getSeriesList()
+  },
+  methods: {
+    showDeleteSeriesMsgBox (seriesId) {
+      this.$confirm('是否删除该用户?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async () => {
+          const res = await this.$http.get(`/series/delete?seriesId=${seriesId}`)
+          console.log(res)
+          if (res.data.code === 'SUCCESS') {
+            this.pageNum = 1
+            this.getSeriesList()
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    },
+    showEditCarDia (series) {
+      // console.log(user)
+      // this.getSeriesIdForSeriesName(user.seriesName)
+      this.dialogFormVisibleEdit = true
+      // this.form = series
+      // this.form.skylight = (series.skylight === true) ? '有' : '无'
+    },
+    noEdit () {
+      this.dialogFormVisibleEdit = false
+      this.form = {}
+    },
+    async editSeries () {
+      console.log(this.form)
+      const res = await this.$http.post(`/series/update`, this.form)
+      console.log(res)
+      if (res.data.code === 'SUCCESS') {
+        this.getSeriesList()
+        this.dialogFormVisibleEdit = false
+        this.$message.success('编辑成功')
+      } else {
+        this.$message.warning('编辑失败')
+      }
+    },
+    searchSeriesForSeriesName () {
+      this.getSeriesList()
+    },
+    showSeriesAddDialog () {
+      this.dialogFormVisibleAdd = true
+      this.form = {}
+    },
+    async changeStatus (series) {
+      const res = await this.$http.get(`/series/changestatus?status=${series.seriesStatus}&seriesId=${series.seriesId}`)
+      if (res.data.code === 'SUCCESS') {
+        this.getSeriesList()
+      }
+    },
+    async addSeries () {
+      console.log(this.form)
+      // this.getSeriesMap()
+      // this.form
+      const res = await this.$http.post(`/series/add`, this.form)
+      if (res.data.code === 'SUCCESS') {
+        this.$message.success('添加成功')
+        this.getSeriesList()
+        this.form = {}
+        this.dialogFormVisibleAdd = false
+      } else {
+        this.$message.warning('添加失败')
+      }
+    },
+    loadSeriesList () {
+      this.getSeriesList()
+    },
+    async getSeriesList () {
+      console.log('pagenum:' + this.pageNum + 'pagesize:' + this.pageSize)
+      const res = await this.$http.get(`/series/query?query=${this.query}&pageNum=${this.pageNum}&pageSize=${this.pageSize}`)
+      console.log(res)
+      if (res.data.code === 'SUCCESS') {
+        this.seriesList = res.data.data.content
+        this.total = res.data.data.totalSize
+      }
+    },
+    handleSizeChange (val) {
+      console.log(`每页 ${val} 条`)
+      this.pageSize = val
+      this.pageNum = 1
+      this.getSeriesList()
+    },
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
+      this.pageNum = val
+      this.getSeriesList()
+    }
+  }
+}
+</script>
+
+<style>
+.box-card {
+  height: 100%;
+}
+.searchRow {
+  margin-top: 20px;
+}
+.inputSearch {
+  width: 300px;
+}
+</style>
