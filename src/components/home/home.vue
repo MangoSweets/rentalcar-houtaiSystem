@@ -11,6 +11,7 @@
         </el-col>
         <el-col :span="2"
           ><div class="grid-content bg-purple">
+            <label>{{this.username}}</label>
             <a class="loginOut" href="#" @click.prevent="handleSignOut()">退出</a>
           </div></el-col
         >
@@ -28,6 +29,10 @@
             <el-menu-item index="users">
               <i class="el-icon-menu"></i>
               <span>用户列表</span>
+            </el-menu-item>
+            <el-menu-item index="drivers">
+              <i class="el-icon-menu"></i>
+              <span>代驾列表</span>
             </el-menu-item>
           </el-submenu>
           <!-- 2 -->
@@ -95,12 +100,21 @@
 export default {
   name: 'home',
   // 通过验证token判断是否登录
-  //   beforeCreate () {
-  //     const token = localStorage.getItem('token')
-  //     if (!token) {
-  //       this.$router.push({ name: 'login' })
-  //     }
-  //   },
+  beforeCreate () {
+    // const token = localStorage.getItem('token')
+    // if (!token) {
+    //   this.$router.push({ name: 'login' })
+    // }
+    console.log(this.$route.params)
+  },
+  created () {
+    this.username = this.$route.params.username
+  },
+  data () {
+    return {
+      username: ''
+    }
+  },
   methods: {
     handleSignOut () {
       localStorage.clear()

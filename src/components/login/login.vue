@@ -42,7 +42,9 @@ export default {
       if (res.data.code === 'SUCCESS') {
         // 登录成功，保存token
         // localStorage.setItem("token",res.data.token)
-        this.$router.push({ name: 'home' })
+        let count = this.formdata
+        this.$router.push(
+          {name: 'home', path: '/home', params: count})
         // console.log('ok')
         this.$message.success(res.data.message)
       } else {
