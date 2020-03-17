@@ -170,6 +170,7 @@ export default {
   },
   created () {
     this.getDriverList()
+    // console.log(this.$store.state.username)
   },
   methods: {
     async changeStatus (driver) {

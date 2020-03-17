@@ -30,6 +30,7 @@
       <el-table-column prop="seriesName" label="系列名" width="100"></el-table-column>
       <el-table-column prop="carType" label="汽车类型" width="100"></el-table-column>
       <el-table-column prop="plateNumber" label="车牌号" width="120"> </el-table-column>
+      <el-table-column prop="price" label="价格" width="120"> </el-table-column>
       <el-table-column prop="carCreater" label="入库人" width="120"> </el-table-column>
       <el-table-column prop="carCreateTime" label="入库时间">
         <template slot-scope="carList">
@@ -124,6 +125,9 @@
         <el-form-item label="车牌号" :label-width="formLabelWidth">
           <el-input v-model="form.plateNumber"  autocomplete="off"></el-input>
         </el-form-item>
+        <el-form-item label="价格" :label-width="formLabelWidth">
+          <el-input v-model="form.price"  autocomplete="off"></el-input>
+        </el-form-item>
         <el-form-item label="使用寿命" :label-width="formLabelWidth">
           <el-date-picker
             v-model="form.productStartTime"
@@ -169,6 +173,9 @@
         <el-form-item label="车牌号" :label-width="formLabelWidth">
           <el-input v-model="form.plateNumber"  autocomplete="off"></el-input>
         </el-form-item>
+        <el-form-item label="价格" :label-width="formLabelWidth">
+          <el-input v-model="form.price"  autocomplete="off"></el-input>
+        </el-form-item>
         <el-form-item label="使用寿命" :label-width="formLabelWidth">
           <el-date-picker
             v-model="form.productStartTime"
@@ -206,6 +213,7 @@ export default {
       form: {
         seriesId: '',
         carType: '',
+        price: '',
         plateNumber: '',
         productStartTime: '',
         productEndTime: ''

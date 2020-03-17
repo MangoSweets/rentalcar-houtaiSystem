@@ -5,12 +5,12 @@ Vue.use(vuex)
 // this.$store.state.变量名
 export default new vuex.Store({
   state: {
-    name: ''
+    username: ''
   },
   mutations: {
     // 修改store中state的唯一方法
-    modifyName (state, name) {
-      state.name = name
+    modifyName (state, username) {
+      state.username = username
     }
   },
   actions: {// 调用mutations去处理修改仓库

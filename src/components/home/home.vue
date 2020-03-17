@@ -71,9 +71,9 @@
               <i class="el-icon-location"></i>
               <span>订单管理</span>
             </template>
-            <el-menu-item index="4-1">
+            <el-menu-item index="order">
               <i class="el-icon-menu"></i>
-              <span>选项1</span>
+              <span>订单列表</span>
             </el-menu-item>
           </el-submenu>
           <!-- 5 -->
@@ -105,10 +105,12 @@ export default {
     // if (!token) {
     //   this.$router.push({ name: 'login' })
     // }
-    console.log(this.$route.params)
+    // console.log(this.$route.params)
   },
   created () {
-    this.username = this.$route.params.username
+    // this.username = this.$route.params.username
+    this.username = this.$store.state.username
+    // console.log(this.username)
   },
   data () {
     return {

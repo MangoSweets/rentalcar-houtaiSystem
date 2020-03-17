@@ -6,6 +6,7 @@ import Home from '@/components/home/home.vue'
 import CarList from '@/components/car/carlist.vue'
 import SeriesList from '@/components/car/seriesList.vue'
 import Driver from '@/components/users/driver.vue'
+import Order from '@/components/order/order.vue'
 
 Vue.use(Router)
 
@@ -40,6 +41,11 @@ export default new Router({
           name: 'seriesList',
           path: '/seriesList',
           component: SeriesList
+        },
+        {
+          name: 'order',
+          path: '/order',
+          component: Order
         }
       ]
     }

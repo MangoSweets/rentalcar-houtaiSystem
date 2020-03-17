@@ -43,6 +43,7 @@ export default {
         // 登录成功，保存token
         // localStorage.setItem("token",res.data.token)
         let count = this.formdata
+        this.$store.commit('modifyName', this.formdata.username)
         this.$router.push(
           {name: 'home', path: '/home', params: count})
         // console.log('ok')
