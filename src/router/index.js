@@ -7,6 +7,7 @@ import CarList from '@/components/car/carlist.vue'
 import SeriesList from '@/components/car/seriesList.vue'
 import Driver from '@/components/users/driver.vue'
 import Order from '@/components/order/order.vue'
+import Role from '@/components/users/role.vue'
 
 Vue.use(Router)
 
@@ -46,6 +47,11 @@ export default new Router({
           name: 'order',
           path: '/order',
           component: Order
+        },
+        {
+          name: 'role',
+          path: '/role',
+          component: Role
         }
       ]
     }
