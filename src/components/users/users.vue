@@ -22,7 +22,7 @@
             icon="el-icon-search"
           ></el-button>
         </el-input>
-        <el-button type="success" @click="dialogFormVisibleAdd = true"
+        <el-button type="success" @click="showAddUserDialog()"
           >添加用户</el-button
         >
       </el-row>
@@ -35,14 +35,14 @@
       <el-table-column prop="password" label="密码" width="80">
       </el-table-column>
       <el-table-column prop="roles" label="角色" width="80"> </el-table-column>
-      <el-table-column prop="name" label="姓名" width="80"> </el-table-column>
+      <el-table-column prop="name" label="姓名" width="100"> </el-table-column>
       <el-table-column prop="sex" label="性别" width="60"> </el-table-column>
-      <el-table-column prop="telephone" label="手机号码"> </el-table-column>
-      <el-table-column prop="IDCard" label="身份证"> </el-table-column>
-      <el-table-column prop="email" label="邮箱"> </el-table-column>
-      <el-table-column prop="bankCard" label="银行卡"> </el-table-column>
+      <el-table-column prop="telephone" label="手机号码" width="120"> </el-table-column>
+      <el-table-column prop="idcard" label="身份证" width="200"> </el-table-column>
+      <el-table-column prop="email" label="邮箱" width="200"> </el-table-column>
+      <el-table-column prop="bankCard" label="银行卡" width="250"> </el-table-column>
       <el-table-column prop="address" label="常驻地址"> </el-table-column>
-      <el-table-column prop="userCreateTime" label="创建日期">
+      <el-table-column prop="userCreateTime" label="创建日期" width="100">
         <template slot-scope="userList">
           <!--  userList.row.userCreatetime userlist的每个对象 会经度有误差 -->
           {{ userList.row.userCreateTime | fmtdate }}
@@ -169,6 +169,10 @@ export default {
     this.getUserList()
   },
   methods: {
+    showAddUserDialog () {
+      this.dialogFormVisibleAdd = true
+      this.form = {}
+    },
     async changeStatus (user) {
       const res = await this.$http.get(`/user/changestatus?userId=${user.userId}&status=${user.userStatus}`)
       if (res.data.code === 'SUCCESS') {
