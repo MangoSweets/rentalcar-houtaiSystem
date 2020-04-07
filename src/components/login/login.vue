@@ -16,9 +16,8 @@
       <el-button
         @click.prevent="handleLogin()"
         class="login-button"
-        type="primary"
-        >登录</el-button
-      >
+        type="primary "
+        >登录</el-button>
     </el-form>
   </div>
 </template>
@@ -38,15 +37,17 @@ export default {
     // es7新语法，async,await 让asios异步操作看起来像同步
     async handleLogin () {
       const res = await this.$http.post('/login', this.formdata)
-      console.log(res)
       if (res.data.code === 'SUCCESS') {
         // 登录成功，保存token
-        // localStorage.setItem("token",res.data.token)
+        // localStorage.setItem('token', res.headers.authorization)
+        this.$store.commit('$_setStorage', res.headers.authorization)
         let count = this.formdata
+        // this.$store.commit('modifyRoles', roles)
+        // localStorage.setItem('roles', res.data.data.role)
+        // localStorage.setItem('permissions', res.data.data.permissions)
         this.$store.commit('modifyName', this.formdata.username)
         this.$router.push(
           {name: 'home', path: '/home', params: count})
-        // console.log('ok')
         this.$message.success(res.data.message)
       } else {
         this.$message.error(res.data.message)
@@ -59,14 +60,14 @@ export default {
 <style>
 .login-wrap {
   height: 100%;
-  background-color: blanchedalmond;
+  background-color:lightgray;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 .login-wrap .login-form {
   width: 400px;
-  background-color: gold;
+  background-color:lightslategray;
   border-radius: 5px;
   padding: 30px;
 }

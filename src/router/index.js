@@ -9,6 +9,7 @@ import Driver from '@/components/users/driver.vue'
 import Order from '@/components/order/order.vue'
 import Role from '@/components/users/role.vue'
 import Permission from '@/components/users/permission.vue'
+import UnAuth from '@/components/unauth/unauth.vue'
 
 Vue.use(Router)
 
@@ -58,6 +59,11 @@ export default new Router({
           name: 'permission',
           path: '/permission',
           component: Permission
+        },
+        {
+          name: 'unauth',
+          path: '/unauth',
+          component: UnAuth
         }
       ]
     }

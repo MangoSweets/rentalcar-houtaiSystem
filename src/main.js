@@ -22,6 +22,21 @@ Vue.filter('fmtdate', v => {
   }
 })
 
+router.beforeEach((to, from, next) => {
+  if (to.path === '/' || to.path === '/unauth') {
+    next()
+  } else {
+    let token = localStorage.token
+    // console.log('12333333')
+    // console.log(token)
+    if (token === 'null' || token === '' || token === undefined) {
+      next('/')
+    } else {
+      next()
+    }
+  }
+})
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

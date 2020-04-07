@@ -234,8 +234,11 @@ export default {
     },
     async getUserList () {
       //  需要授权的API,必须在请求头中使用后端定义的Authorization字段提供token令牌
-      //  const AUTH_TOKEN =localStorage.getItem('token')
-      //  this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN
+      // const AUTH_TOKEN = localStorage.getItem('token')
+      // if (AUTH_TOKEN === '') {
+      //   this.$router.push({name: 'unauth', path: '/unauth'})
+      // }
+      // this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN
       const res = await this.$http.get(
         `/user/selectall?query=${this.query}&pageNum=${this.pageNum}&pageSize=${this.pagesize}`
       )
