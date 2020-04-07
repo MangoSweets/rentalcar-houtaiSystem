@@ -100,51 +100,52 @@
     </el-pagination>
 
     <el-dialog title="添加用户" :visible.sync="dialogFormVisibleAdd"  width="30%" center  top="20">
-      <el-form :model="form">
-        <el-form-item label="用户名" :label-width="formLabelWidth">
+      <el-form :model="form" :rules="rules" ref="form" status-icon class="formClass">
+        <el-form-item label="用户名" :label-width="formLabelWidth" prop="username">
           <el-input v-model="form.username" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="密码" :label-width="formLabelWidth">
+        <el-form-item label="密码" :label-width="formLabelWidth"  prop="password">
           <el-input
             show-password
             v-model="form.password"
             autocomplete="off"
           ></el-input>
         </el-form-item>
-        <el-form-item label="手机号码" :label-width="formLabelWidth">
+        <el-form-item label="手机号码" :label-width="formLabelWidth" prop="telephone">
           <el-input v-model="form.telephone" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱" :label-width="formLabelWidth">
+        <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
           <el-input v-model="form.email" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisibleAdd = false">取 消</el-button>
-        <el-button type="primary" @click="addUser()">确 定</el-button>
+        <el-button type="primary" @click="addUser('form')">确 定</el-button>
       </div>
     </el-dialog>
 
-        <el-dialog title="编辑用户" :visible.sync="dialogFormVisibleEdit">
-      <el-form :model="form">
+    <el-dialog title="编辑用户" :visible.sync="dialogFormVisibleEdit">
+      <el-form :model="form" :rules="rules" ref="form" status-icon>
         <el-form-item label="用户名" :label-width="formLabelWidth">
           <el-input disabled v-model="form.username"  autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="手机号码" :label-width="formLabelWidth">
+        <el-form-item label="手机号码" :label-width="formLabelWidth" prop="telephone">
           <el-input v-model="form.telephone" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱" :label-width="formLabelWidth">
+        <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
           <el-input v-model="form.email" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="noEdit()">取 消</el-button>
-        <el-button type="primary" @click="editUser()">确 定</el-button>
+        <el-button type="primary" @click="editUser('form')">确 定</el-button>
       </div>
     </el-dialog>
   </el-card>
 </template>
 
 <script>
+import {validatePsdReg, validatePhoneTwo, validateCode, validateEMail} from '@/assets/js/validate.js'
 export default {
   name: 'userManage',
   data () {
@@ -157,6 +158,20 @@ export default {
         password: '',
         telephone: '',
         email: ''
+      },
+      rules: {
+        username: [
+          { validator: validateCode, trigger: 'change' }
+        ],
+        password: [
+          { validator: validatePsdReg, trigger: 'change' }
+        ],
+        telephone: [
+          { validator: validatePhoneTwo, trigger: 'change' }
+        ],
+        email: [
+          { validator: validateEMail, trigger: 'change' }
+        ]
       },
       query: '',
       userList: [],
@@ -183,16 +198,20 @@ export default {
       this.dialogFormVisibleEdit = false
       this.form = {}
     },
-    async editUser () {
-      const res = await this.$http.post(`/user/updateuser`, this.form)
-      console.log(res)
-      if (res.data.code === 'SUCCESS') {
-        this.getUserList()
-        this.dialogFormVisibleEdit = false
-        this.$message.success('编辑成功')
-      } else {
-        this.$message.success('编辑失败')
-      }
+    editUser (formName) {
+      this.$refs[formName].validate(async (valid) => {
+        if (valid) {
+          const res = await this.$http.post(`/user/updateuser`, this.form)
+          console.log(res)
+          if (res.data.code === 'SUCCESS') {
+            this.getUserList()
+            this.dialogFormVisibleEdit = false
+            this.$message.success('编辑成功')
+          } else {
+            this.$message.success('编辑失败')
+          }
+        }
+      })
     },
     showEditUserDia (user) {
       console.log(user)
@@ -224,17 +243,25 @@ export default {
           })
         })
     },
-    async addUser () {
+    addUser (formName) {
       console.log(this.form)
-      const res = await this.$http.post(`/user/addUser`, this.form)
-      this.dialogFormVisibleAdd = false
-      if (res.data.code === 'SUCCESS') {
-        this.$message.success('添加成功')
-        this.getUserList()
-        this.form = {}
-      } else {
-        this.$message.warning('添加失败')
-      }
+      this.$refs[formName].validate(async (valid) => {
+        if (valid) {
+          // console.log('校验通过')
+          const res = await this.$http.post(`/user/addUser`, this.form)
+          this.dialogFormVisibleAdd = false
+          if (res.data.code === 'SUCCESS') {
+            this.$message.success('添加成功')
+            this.getUserList()
+            this.form = {}
+          } else {
+            this.$message.warning('添加失败')
+          }
+        } else {
+          console.log('用户信息不合法')
+          return false
+        }
+      })
     },
     async getUserList () {
       //  需要授权的API,必须在请求头中使用后端定义的Authorization字段提供token令牌
@@ -285,5 +312,8 @@ export default {
 }
 .searchRow {
   margin-top: 20px;
+}
+.formClass {
+  border-spacing: 1px;
 }
 </style>
