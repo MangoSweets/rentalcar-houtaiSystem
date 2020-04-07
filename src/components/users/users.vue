@@ -161,16 +161,16 @@ export default {
       },
       rules: {
         username: [
-          { validator: validateCode, trigger: 'change' }
+          { validator: validateCode, trigger: 'blur' }
         ],
         password: [
-          { validator: validatePsdReg, trigger: 'change' }
+          { validator: validatePsdReg, trigger: 'blur' }
         ],
         telephone: [
-          { validator: validatePhoneTwo, trigger: 'change' }
+          { validator: validatePhoneTwo, trigger: 'blur' }
         ],
         email: [
-          { validator: validateEMail, trigger: 'change' }
+          { validator: validateEMail, trigger: 'blur' }
         ]
       },
       query: '',
@@ -210,6 +210,8 @@ export default {
           } else {
             this.$message.success('编辑失败')
           }
+        } else {
+          return false
         }
       })
     },
