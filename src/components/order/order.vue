@@ -22,7 +22,7 @@
             icon="el-icon-search"
           ></el-button>
         </el-input>
-        <el-button type="success" @click="dialogFormVisibleAdd = true">添加订单</el-button>
+        <el-button type="success" @click="showAddUserDialog ()">添加订单</el-button>
       </el-row>
     </el-row>
     <!-- 表格 -->
@@ -210,6 +210,10 @@ export default {
     })
   },
   methods: {
+    showAddUserDialog () {
+      this.dialogFormVisibleAdd = true
+      this.form = {}
+    },
     querySearchUserAsync (queryString, callback) {
       var list = [{}]
       // 调用的后台接口

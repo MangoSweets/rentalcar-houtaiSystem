@@ -116,8 +116,12 @@
         </el-form-item>
         <el-form-item label="天窗" :label-width="formLabelWidth">
           <el-select v-model="form.skylight" placeholder="请选择">
-            <el-option label="有"  value="true"> </el-option>
-            <el-option label="无"  value="false"> </el-option>
+            <el-option
+            v-for="item in skylightOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+           </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="气囊数" :label-width="formLabelWidth">
@@ -177,8 +181,14 @@
         </el-form-item>
         <el-form-item label="天窗" :label-width="formLabelWidth">
           <el-select v-model="form.skylight" placeholder="请选择">
-            <el-option label="有"  value="true"> </el-option>
-            <el-option label="无"  value="false"> </el-option>
+            <el-option
+              v-for="item in skylightOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+            <!-- <el-option label="有"  value="true"> </el-option>
+            <el-option label="无"  value="false"> </el-option> -->
           </el-select>
         </el-form-item>
         <el-form-item label="气囊数" :label-width="formLabelWidth">
@@ -187,8 +197,7 @@
         <el-form-item label="座椅类型" :label-width="formLabelWidth">
           <!-- <el-input v-model="form.seatType"  autocomplete="off"></el-input> -->
           <el-select v-model="form.seatType" placeholder="请选择">
-            <el-option label="真皮"  value="真皮"> </el-option>
-            <el-option label="织物"  value="织物"> </el-option>
+            <el-option v-for="val in seatTypeList" :value="val" :key="val"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="油箱容量" :label-width="formLabelWidth">
@@ -233,6 +242,7 @@ export default {
   name: 'seriesManager',
   data () {
     return {
+      seatTypeList: ['真皮', '织物'],
       query: '',
       pageNum: 1,
       pageSize: 2,
@@ -241,6 +251,13 @@ export default {
       dialogFormVisibleEdit: false,
       formLabelWidth: '120px',
       seriesList: [],
+      skylightOptions: [{
+        value: true,
+        label: '有'
+      }, {
+        value: false,
+        label: '无'
+      }],
       form: {
         brand: '',
         seriesName: '',
@@ -294,7 +311,9 @@ export default {
       // console.log(user)
       // this.getSeriesIdForSeriesName(user.seriesName)
       this.dialogFormVisibleEdit = true
-      // this.form = series
+      console.log(series)
+      this.form = series
+      // if (series.skylight === true)
       // this.form.skylight = (series.skylight === true) ? '有' : '无'
     },
     noEdit () {
@@ -302,7 +321,7 @@ export default {
       this.form = {}
     },
     async editSeries () {
-      console.log(this.form)
+      console.log('2222')
       const res = await this.$http.post(`/series/update`, this.form)
       console.log(res)
       if (res.data.code === 'SUCCESS') {
