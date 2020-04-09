@@ -38,6 +38,7 @@
       <el-table-column prop="name" label="姓名" width="100"> </el-table-column>
       <el-table-column prop="sex" label="性别" width="60"> </el-table-column>
       <el-table-column prop="telephone" label="手机号码" width="120"> </el-table-column>
+      <el-table-column prop="cardTypeSelect" label="证件类型" width="120"> </el-table-column>
       <el-table-column prop="idcard" label="身份证" width="200"> </el-table-column>
       <el-table-column prop="email" label="邮箱" width="200"> </el-table-column>
       <el-table-column prop="bankCard" label="银行卡" width="250"> </el-table-column>
@@ -275,8 +276,13 @@ export default {
       const res = await this.$http.get(
         `/user/selectall?query=${this.query}&pageNum=${this.pageNum}&pageSize=${this.pagesize}`
       )
-      console.log(res.data)
+      // console.log(res.data.data.content[1].cardTypeSelect)
       if (res.data.code === 'SUCCESS') {
+        res.data.data.content.forEach(element => {
+          if (element.cardTypeSelect === '10') {
+            element.cardTypeSelect = '大陆居民身份证'
+          }
+        })
         this.userList = res.data.data.content
         this.total = res.data.data.totalSize
         // this.pageSize = res.data.data.pageSize
