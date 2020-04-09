@@ -22,7 +22,7 @@
             icon="el-icon-search"
           ></el-button>
         </el-input>
-        <el-button type="success" @click="dialogFormVisibleAdd = true">添加用户</el-button>
+        <el-button type="success" @click="showAddUserDialog()">添加用户</el-button>
       </el-row>
     </el-row>
     <!-- 表格 -->
@@ -173,6 +173,10 @@ export default {
     // console.log(this.$store.state.username)
   },
   methods: {
+    showAddUserDialog () {
+      this.dialogFormVisibleAdd = true
+      this.form = {}
+    },
     async changeStatus (driver) {
       const res = await this.$http.get(`/driver/changestatus?driverId=${driver.drivingBehalfId}&status=${driver.drivingStatus}`)
       if (res.data.code === 'SUCCESS') {
