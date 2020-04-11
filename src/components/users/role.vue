@@ -71,32 +71,32 @@
     </el-pagination>
 
     <el-dialog title="添加" :visible.sync="dialogFormVisibleAdd" width="30%" center  top="20">
-      <el-form :model="form">
-        <el-form-item label="角色名" :label-width="formLabelWidth">
+      <el-form :model="form"  :rules="rules" ref="form" status-icon>
+        <el-form-item label="角色名" :label-width="formLabelWidth" prop="roleName">
           <el-input v-model="form.roleName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="角色标识" :label-width="formLabelWidth">
+        <el-form-item label="角色标识" :label-width="formLabelWidth" prop="roleIdentity">
           <el-input v-model="form.roleIdentity" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="noAdd()">取 消</el-button>
-        <el-button type="primary" @click="addRole()">确 定</el-button>
+        <el-button type="primary" @click="addRole('form')">确 定</el-button>
       </div>
     </el-dialog>
 
     <el-dialog title="编辑" :visible.sync="dialogFormVisibleEdit" width="30%" center  top="20">
-      <el-form :model="form">
-        <el-form-item label="角色名" :label-width="formLabelWidth">
+      <el-form :model="form" :rules="rules" ref="form" status-icon>
+        <el-form-item label="角色名" :label-width="formLabelWidth" prop="roleName">
           <el-input v-model="form.roleName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="角色标识" :label-width="formLabelWidth">
+        <el-form-item label="角色标识" :label-width="formLabelWidth" prop="roleIdentity">
           <el-input v-model="form.roleIdentity" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="noEdit()">取 消</el-button>
-        <el-button type="primary" @click="editRole()">确 定</el-button>
+        <el-button type="primary" @click="editRole('form')">确 定</el-button>
       </div>
     </el-dialog>
   </el-card>
@@ -113,6 +113,14 @@ export default {
       form: {
         roleName: '',
         roleIdentity: ''
+      },
+      rules: {
+        roleName: [
+          { required: true, message: '请输入角色名', trigger: 'blur' }
+        ],
+        roleIdentity: [
+          { required: true, message: '请输入角色标识', trigger: 'blur' }
+        ]
       },
       query: '',
       roleList: [],
@@ -137,17 +145,22 @@ export default {
     noAdd () {
       this.dialogFormVisibleAdd = false
       this.form = {}
+      this.getRoleList()
     },
-    async editRole () {
-      const res = await this.$http.post(`/role/update`, this.form)
-      console.log(res)
-      if (res.data.code === 'SUCCESS') {
-        this.getRoleList()
-        this.dialogFormVisibleEdit = false
-        this.$message.success('编辑成功')
-      } else {
-        this.$message.success('编辑失败')
-      }
+    async editRole (formName) {
+      this.$refs[formName].validate(async (valid) => {
+        if (valid) {
+          const res = await this.$http.post(`/role/update`, this.form)
+          console.log(res)
+          if (res.data.code === 'SUCCESS') {
+            this.getRoleList()
+            this.dialogFormVisibleEdit = false
+            this.$message.success('编辑成功')
+          } else {
+            this.$message.success('编辑失败')
+          }
+        }
+      })
     },
     showEditRoleDia (role) {
       // console.log(driver)
@@ -179,17 +192,21 @@ export default {
           })
         })
     },
-    async addRole () {
+    async addRole (formName) {
       console.log(this.form)
-      const res = await this.$http.post(`/role/add`, this.form)
-      this.dialogFormVisibleAdd = false
-      if (res.data.code === 'SUCCESS') {
-        this.$message.success('添加成功')
-        this.getRoleList()
-        this.form = {}
-      } else {
-        this.$message.warning('添加失败')
-      }
+      this.$refs[formName].validate(async (valid) => {
+        if (valid) {
+          const res = await this.$http.post(`/role/add`, this.form)
+          this.dialogFormVisibleAdd = false
+          if (res.data.code === 'SUCCESS') {
+            this.$message.success('添加成功')
+            this.getRoleList()
+            this.form = {}
+          } else {
+            this.$message.warning('添加失败')
+          }
+        }
+      })
     },
     async getRoleList () {
       //  需要授权的API,必须在请求头中使用后端定义的Authorization字段提供token令牌

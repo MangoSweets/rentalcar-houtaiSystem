@@ -90,63 +90,64 @@
     </el-pagination>
 
     <el-dialog title="添加" :visible.sync="dialogFormVisibleAdd" width="30%" center  top="20">
-      <el-form :model="form">
-        <el-form-item label="代驾姓名" :label-width="formLabelWidth">
+      <el-form :model="form" :rules="rules" ref="form" >
+        <el-form-item label="代驾姓名" :label-width="formLabelWidth" prop="drivingName">
           <el-input v-model="form.drivingName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="性别" :label-width="formLabelWidth">
+        <el-form-item label="性别" :label-width="formLabelWidth" prop="drivingSex">
           <el-select v-model="form.drivingSex" placeholder="请选择">
             <el-option label="男"  value="男"> </el-option>
             <el-option label="女"  value="女"> </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="手机号码" :label-width="formLabelWidth">
+        <el-form-item label="手机号码" :label-width="formLabelWidth" prop="drivingTelephone">
           <el-input v-model="form.drivingTelephone" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="信誉分" :label-width="formLabelWidth">
+        <el-form-item label="信誉分" :label-width="formLabelWidth" prop="creditscore">
           <el-input v-model="form.creditscore" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="驾照" :label-width="formLabelWidth">
+        <el-form-item label="驾照" :label-width="formLabelWidth" prop="behalfLicense">
           <el-input v-model="form.behalfLicense" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisibleAdd = false">取 消</el-button>
-        <el-button type="primary" @click="addDriver()">确 定</el-button>
+        <el-button type="primary" @click="addDriver('form')">确 定</el-button>
       </div>
     </el-dialog>
 
     <el-dialog title="编辑" :visible.sync="dialogFormVisibleEdit" width="30%" center  top="20">
-      <el-form :model="form">
-        <el-form-item label="代驾姓名" :label-width="formLabelWidth">
+      <el-form :model="form" :rules="rules" ref="form">
+        <el-form-item label="代驾姓名" :label-width="formLabelWidth" prop="drivingName">
           <el-input v-model="form.drivingName" autocomplete="off" disabled></el-input>
         </el-form-item>
-        <el-form-item label="性别" :label-width="formLabelWidth">
+        <el-form-item label="性别" :label-width="formLabelWidth" prop="drivingSex">
           <el-input v-model="form.drivingSex" autocomplete="off" disabled></el-input>
           <!-- <el-select v-model="form.drivingSex" placeholder="请选择">
             <el-option label="男"  value="男"> </el-option>
             <el-option label="女"  value="女"> </el-option>
           </el-select> -->
         </el-form-item>
-        <el-form-item label="手机号码" :label-width="formLabelWidth">
+        <el-form-item label="手机号码" :label-width="formLabelWidth" prop="drivingTelephone">
           <el-input v-model="form.drivingTelephone" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="信誉分" :label-width="formLabelWidth">
+        <el-form-item label="信誉分" :label-width="formLabelWidth" prop="creditscore">
           <el-input v-model="form.creditscore" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="驾照" :label-width="formLabelWidth">
+        <el-form-item label="驾照" :label-width="formLabelWidth" prop="behalfLicense">
           <el-input v-model="form.behalfLicense" autocomplete="off" disabled></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisibleAdd = false">取 消</el-button>
-        <el-button type="primary" @click="editDriver()">确 定</el-button>
+        <el-button @click="noEdit()">取 消</el-button>
+        <el-button type="primary" @click="editDriver('form')">确 定</el-button>
       </div>
     </el-dialog>
   </el-card>
 </template>
 
 <script>
+import {validatePhoneTwo} from '@/assets/js/validate.js'
 export default {
   name: 'driverManage',
   data () {
@@ -160,6 +161,23 @@ export default {
         drivingTelephone: '',
         creditscore: '',
         behalfLicense: ''
+      },
+      rules: {
+        drivingName: [
+          { required: true, message: '请输入姓名', trigger: 'change' }
+        ],
+        drivingSex: [
+          { required: true, message: '请选择性别', trigger: 'change' }
+        ],
+        drivingTelephone: [
+          { validator: validatePhoneTwo, trigger: 'change' }
+        ],
+        creditscore: [
+          { required: true, message: '请填写信誉分', trigger: 'change' }
+        ],
+        behalfLicense: [
+          { required: true, message: '请绑定驾照', trigger: 'change' }
+        ]
       },
       query: '',
       driverList: [],
@@ -186,17 +204,22 @@ export default {
     noEdit () {
       this.dialogFormVisibleEdit = false
       this.form = {}
+      this.getDriverList()
     },
-    async editDriver () {
-      const res = await this.$http.post(`/driver/update`, this.form)
-      console.log(res)
-      if (res.data.code === 'SUCCESS') {
-        this.getDriverList()
-        this.dialogFormVisibleEdit = false
-        this.$message.success('编辑成功')
-      } else {
-        this.$message.success('编辑失败')
-      }
+    async editDriver (formName) {
+      this.$refs[formName].validate(async (valid) => {
+        if (valid) {
+          const res = await this.$http.post(`/driver/update`, this.form)
+          console.log(res)
+          if (res.data.code === 'SUCCESS') {
+            this.getDriverList()
+            this.dialogFormVisibleEdit = false
+            this.$message.success('编辑成功')
+          } else {
+            this.$message.success('编辑失败')
+          }
+        }
+      })
     },
     showEditDriverDia (driver) {
       console.log(driver)
@@ -228,17 +251,21 @@ export default {
           })
         })
     },
-    async addDriver () {
+    async addDriver (formName) {
       console.log(this.form)
-      const res = await this.$http.post(`/driver/add`, this.form)
-      this.dialogFormVisibleAdd = false
-      if (res.data.code === 'SUCCESS') {
-        this.$message.success('添加成功')
-        this.getDriverList()
-        this.form = {}
-      } else {
-        this.$message.warning('添加失败')
-      }
+      this.$refs[formName].validate(async (valid) => {
+        if (valid) {
+          const res = await this.$http.post(`/driver/add`, this.form)
+          this.dialogFormVisibleAdd = false
+          if (res.data.code === 'SUCCESS') {
+            this.$message.success('添加成功')
+            this.getDriverList()
+            this.form = {}
+          } else {
+            this.$message.warning('添加失败')
+          }
+        }
+      })
     },
     async getDriverList () {
       //  需要授权的API,必须在请求头中使用后端定义的Authorization字段提供token令牌

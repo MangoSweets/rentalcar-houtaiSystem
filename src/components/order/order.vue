@@ -92,8 +92,8 @@
     </el-pagination>
 
     <el-dialog title="添加" :visible.sync="dialogFormVisibleAdd" width="30%" center  top="20">
-      <el-form :model="form">
-        <el-form-item label="用户名" :label-width="formLabelWidth">
+      <el-form :model="form" :rules="rules" ref="form" status-icon>
+        <el-form-item label="用户名" :label-width="formLabelWidth" prop="username">
           <el-autocomplete
             v-model="form.username"
             :fetch-suggestions="querySearchUserAsync"
@@ -101,7 +101,7 @@
             placeholder="请输入内容">
           </el-autocomplete>
         </el-form-item>
-        <el-form-item label="汽车名" :label-width="formLabelWidth">
+        <el-form-item label="汽车名" :label-width="formLabelWidth" prop="seriesName">
           <el-autocomplete
           v-model="form.seriesName"
           :fetch-suggestions="querySearchCarAsync"
@@ -109,31 +109,42 @@
           placeholder="请输入内容">
         </el-autocomplete>
         </el-form-item>
-        <el-form-item label="价格" :label-width="formLabelWidth">
+        <el-form-item label="价格" :label-width="formLabelWidth"  prop="price">
           <el-input v-model="form.price" disabled autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="订单有效时间" :label-width="formLabelWidth">
+        <el-form-item label="有效时间" :label-width="formLabelWidth"  required>
+          <el-col :span="11">
+            <el-form-item prop="startTime">
+              <el-date-picker
+                style="width: 100%;"
+                v-model="form.startTime"
+                type="date"
+                placeholder="开始时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        <el-col class="line" :span="2">---</el-col>
+        <el-col :span="11">
+        <el-form-item prop="endTime">
           <el-date-picker
-            v-model="form.startTime"
-            type="date"
-            placeholder="开始时间">
-          </el-date-picker> 至
-          <el-date-picker
+            style="width: 100%;"
             v-model="form.endTime"
             type="date"
             placeholder="结束时间">
           </el-date-picker>
         </el-form-item>
+        </el-col>
+      </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisibleAdd = false">取 消</el-button>
-        <el-button type="primary" @click="addOrder()">确 定</el-button>
+        <el-button type="primary" @click="addOrder('form')">确 定</el-button>
       </div>
     </el-dialog>
 
     <el-dialog title="编辑" :visible.sync="dialogFormVisibleEdit" width="30%" center  top="20">
-      <el-form :model="form">
-        <el-form-item label="用户名" :label-width="formLabelWidth">
+      <el-form :model="form" :rules="rules" ref="form" status-icon>
+        <el-form-item label="用户名" :label-width="formLabelWidth" prop="username">
           <el-autocomplete
             v-model="form.username"
             :fetch-suggestions="querySearchUserAsync"
@@ -141,7 +152,7 @@
             placeholder="请输入内容">
           </el-autocomplete>
         </el-form-item>
-        <el-form-item label="汽车名" :label-width="formLabelWidth">
+        <el-form-item label="汽车名" :label-width="formLabelWidth" prop="seriesName">
           <el-autocomplete
           v-model="form.seriesName"
           :fetch-suggestions="querySearchCarAsync"
@@ -149,25 +160,36 @@
           placeholder="请输入内容">
         </el-autocomplete>
         </el-form-item>
-        <el-form-item label="价格" :label-width="formLabelWidth">
+        <el-form-item label="价格" :label-width="formLabelWidth"  prop="price">
           <el-input v-model="form.price" disabled autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="订单有效时间" :label-width="formLabelWidth">
+        <el-form-item label="有效时间" :label-width="formLabelWidth"  required>
+          <el-col :span="11">
+            <el-form-item prop="startTime">
+              <el-date-picker
+                style="width: 100%;"
+                v-model="form.startTime"
+                type="date"
+                placeholder="开始时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        <el-col class="line" :span="2">---</el-col>
+        <el-col :span="11">
+        <el-form-item prop="endTime">
           <el-date-picker
-            v-model="form.startTime"
-            type="date"
-            placeholder="开始时间">
-          </el-date-picker> 至
-          <el-date-picker
+            style="width: 100%;"
             v-model="form.endTime"
             type="date"
             placeholder="结束时间">
           </el-date-picker>
         </el-form-item>
+        </el-col>
+      </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisibleAdd = false">取 消</el-button>
-        <el-button type="primary" @click="editOrder()">确 定</el-button>
+        <el-button type="primary" @click="editOrder('form')">确 定</el-button>
       </div>
     </el-dialog>
   </el-card>
@@ -187,8 +209,21 @@ export default {
         username: '',
         seriesName: '',
         startTime: '',
-        endTime: '',
-        status: ''
+        endTime: ''
+      },
+      rules: {
+        username: [
+          { required: true, message: '请填写订单用户名,支持联想', trigger: 'blur' }
+        ],
+        seriesName: [
+          { required: true, message: '请输入系列名,支持联想', trigger: 'blur' }
+        ],
+        startTime: [
+          { required: true, message: '请选择日期', trigger: 'change' }
+        ],
+        endTime: [
+          { required: true, message: '请选择日期', trigger: 'change' }
+        ]
       },
       query: '',
       orderList: [],
@@ -229,6 +264,7 @@ export default {
         list = response.data.data
         callback(list)
       }).catch((error) => {
+        alert('该用户信息获取异常' + error)
         console.log(error)
       })
     },
@@ -239,8 +275,6 @@ export default {
       // 从后台获取到对象数组
       this.$http.get(`/car/getlikecar?seriesName=${queryString}`).then((response) => {
         // 在这里为这个数组中每一个对象加一个value字段, 因为autocomplete只识别value字段并在下拉列中显示
-        console.log('333')
-        console.log(response.data.data)
         for (let i of response.data.data) {
           // 将想要展示的数据作为value
           i.value = i.seriesName
@@ -252,25 +286,16 @@ export default {
       })
     },
     handleSelectUsername (item) {
-      console.log(item)
-      console.log(item.userId)
       this.form.userId = item.userId
       // do something
     },
     handleSelectCar (item) {
-      console.log(item)
       this.form.price = item.price
       this.form.carId = item.carId
-      console.log(item.carId)
       // do something
     },
     async getNameList (queryString) {
       const res = await this.$http.get(`/user/getlikenames?username=${queryString}`)
-      // for (let i = 0; i < res.data.data.length; i += 1) {
-      // this.nameList.value = res.data.data[i]
-      // this.nameList=res.data.data[i]
-      // console.log(res.data.data)
-      // }
       console.log(this.nameList)
       if (res.data.code === 'SUCCESS') {
         this.nameList = res.data.data
@@ -288,17 +313,22 @@ export default {
     noEdit () {
       this.dialogFormVisibleEdit = false
       this.form = {}
+      this.getOrderList()
     },
-    async editOrder () {
-      const res = await this.$http.post(`/order/update`, this.form)
-      console.log(res)
-      if (res.data.code === 'SUCCESS') {
-        this.getOrderList()
-        this.dialogFormVisibleEdit = false
-        this.$message.success('编辑成功')
-      } else {
-        this.$message.success('编辑失败')
-      }
+    async editOrder (formName) {
+      this.$refs[formName].validate(async (valid) => {
+        if (valid) {
+          const res = await this.$http.post(`/order/update`, this.form)
+          console.log(res)
+          if (res.data.code === 'SUCCESS') {
+            this.getOrderList()
+            this.dialogFormVisibleEdit = false
+            this.$message.success('编辑成功')
+          } else {
+            this.$message.success('编辑失败')
+          }
+        }
+      })
     },
     showEditOrderDia (order) {
       console.log(order)
@@ -330,17 +360,20 @@ export default {
           })
         })
     },
-    async addOrder () {
-      console.log(this.form)
-      const res = await this.$http.post(`/order/add`, this.form)
-      this.dialogFormVisibleAdd = false
-      if (res.data.code === 'SUCCESS') {
-        this.$message.success('添加成功')
-        this.getOrderList()
-        this.form = {}
-      } else {
-        this.$message.warning('添加失败')
-      }
+    async addOrder (formName) {
+      this.$refs[formName].validate(async (valid) => {
+        if (valid) {
+          const res = await this.$http.post(`/order/add`, this.form)
+          this.dialogFormVisibleAdd = false
+          if (res.data.code === 'SUCCESS') {
+            this.$message.success('添加成功')
+            this.getOrderList()
+            this.form = {}
+          } else {
+            this.$message.warning('添加失败')
+          }
+        }
+      })
     },
     async getOrderList () {
       //  需要授权的API,必须在请求头中使用后端定义的Authorization字段提供token令牌

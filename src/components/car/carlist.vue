@@ -34,7 +34,7 @@
       <el-table-column prop="carCreater" label="入库人" width="120"> </el-table-column>
       <el-table-column prop="carCreateTime" label="入库时间">
         <template slot-scope="carList">
-          {{ carList.carCreateTime | fmtdate }}
+          {{ carList.row.carCreateTime | fmtdate }}
         </template>
       </el-table-column>
       <el-table-column prop="productStartTime" label="出厂时间">
@@ -100,56 +100,66 @@
   </el-pagination>
 
     <el-dialog title="添加" :visible.sync="dialogFormVisibleAdd"   width="30%" center top="20">
-      <el-form :model="form" :rules="carAddRules">
-        <el-form-item label="系列名" :label-width="formLabelWidth">
+      <el-form :model="form" :rules="rules" ref="form" status-icon>
+        <el-form-item label="系列名" :label-width="formLabelWidth" prop="seriesId">
           <!-- <el-input v-model="form.seriesName"  autocomplete="off"></el-input> -->
           <el-select v-model="form.seriesId" placeholder="请选择">
             <el-option
-              v-for="item in seriesMap"
-              :key="item.seriesId"
-              :label="item.seriesName"
-              :value="item.seriesId">
+            v-for="item in seriesMap"
+            :key="item.seriesId"
+            :label="item.seriesName"
+            :value="item.seriesId">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="汽车类型" :label-width="formLabelWidth">
+        <el-form-item label="汽车类型" :label-width="formLabelWidth" prop="carType">
           <el-select v-model="form.carType" placeholder="请选择">
             <el-option
-              v-for="item in carTypeList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+            v-for="item in carTypeList"
+            :key="item"
+            :value="item">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="车牌号" :label-width="formLabelWidth">
+        <el-form-item label="车牌号" :label-width="formLabelWidth" prop="plateNumber">
           <el-input v-model="form.plateNumber"  autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="价格" :label-width="formLabelWidth">
+        <el-form-item label="价格" :label-width="formLabelWidth" prop="price">
           <el-input v-model="form.price"  autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="使用寿命" :label-width="formLabelWidth">
-          <el-date-picker
-            v-model="form.productStartTime"
-            type="date"
-            placeholder="出厂日期">
-          </el-date-picker> 至
-          <el-date-picker
-            v-model="form.productEndTime"
-            type="date"
-            placeholder="报废日期">
-          </el-date-picker>
+        <el-form-item label="使用寿命" :label-width="formLabelWidth" required>
+          <el-col :span="11">
+            <el-form-item prop="productStartTime">
+              <el-date-picker
+                style="width: 100%;"
+                v-model="form.productStartTime"
+                type="date"
+                placeholder="出厂日期">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col class="line" :span="2">---</el-col>
+          <el-col :span="11">
+          <el-form-item prop="productEndTime">
+            <el-date-picker
+              style="width: 100%;"
+              v-model="form.productEndTime"
+              type="date"
+              placeholder="报废日期">
+            </el-date-picker>
+          </el-form-item>
+          </el-col>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisibleAdd = false">取 消</el-button>
-        <el-button type="primary" @click="addCar()">确 定</el-button>
+        <el-button type="primary" @click="addCar('form')">确 定</el-button>
       </div>
     </el-dialog>
 
     <el-dialog title="编辑" :visible.sync="dialogFormVisibleEdit"   width="30%" center top="20">
-      <el-form :model="form" :rules="carAddRules">
-        <el-form-item label="系列名" :label-width="formLabelWidth">
+      <el-form :model="form" :rules="rules" ref="form" status-icon>
+        <el-form-item label="系列名" :label-width="formLabelWidth" prop="seriesId">
           <!-- <el-input v-model="form.seriesName"  autocomplete="off"></el-input> -->
           <el-select v-model="form.seriesId" placeholder="请选择">
             <el-option
@@ -160,38 +170,48 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="汽车类型" :label-width="formLabelWidth">
+        <el-form-item label="汽车类型" :label-width="formLabelWidth" prop="carType">
           <el-select v-model="form.carType" placeholder="请选择">
             <el-option
               v-for="item in carTypeList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+              :key="item"
+              :value="item">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="车牌号" :label-width="formLabelWidth">
+        <el-form-item label="车牌号" :label-width="formLabelWidth" prop="plateNumber">
           <el-input v-model="form.plateNumber"  autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="价格" :label-width="formLabelWidth">
+        <el-form-item label="价格" :label-width="formLabelWidth" prop="price">
           <el-input v-model="form.price"  autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="使用寿命" :label-width="formLabelWidth">
-          <el-date-picker
-            v-model="form.productStartTime"
-            type="date"
-            placeholder="出厂日期">
-          </el-date-picker> 至
-          <el-date-picker
-            v-model="form.productEndTime"
-            type="date"
-            placeholder="报废日期">
-          </el-date-picker>
+        <el-form-item label="使用寿命" :label-width="formLabelWidth" required>
+          <el-col :span="11">
+            <el-form-item prop="productStartTime">
+              <el-date-picker
+                style="width: 100%;"
+                v-model="form.productStartTime"
+                type="date"
+                placeholder="出厂日期">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col class="line" :span="2">---</el-col>
+          <el-col :span="11">
+          <el-form-item prop="productEndTime">
+            <el-date-picker
+              style="width: 100%;"
+              v-model="form.productEndTime"
+              type="date"
+              placeholder="报废日期">
+            </el-date-picker>
+          </el-form-item>
+          </el-col>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="noEdit()">取 消</el-button>
-        <el-button type="primary" @click="editCar()">确 定</el-button>
+        <el-button type="primary" @click="editCar('form')">确 定</el-button>
       </div>
     </el-dialog>
   </el-card>
@@ -212,25 +232,36 @@ export default {
       carList: [],
       form: {
         seriesId: '',
+        carCreater: '',
+        carUpdater: '',
         carType: '',
         price: '',
         plateNumber: '',
         productStartTime: '',
         productEndTime: ''
       },
-      carTypeList: [{
-        value: '新能源',
-        label: '新能源'
+      rules: {
+        seriesId: [
+          { required: true, message: '请选择系列', trigger: 'change' }
+        ],
+        carType: [
+          { required: true, message: '请选择汽车类型', trigger: 'change' }
+        ],
+        plateNumber: [
+          { required: true, message: '请输入车牌号', trigger: 'blur' }
+        ],
+        price: [
+          { required: true, message: '请输入价格', trigger: 'blur' }
+        ],
+        productStartTime: [
+          { required: true, message: '请选择日期', trigger: 'change' }
+        ],
+        productEndTime: [
+          { required: true, message: '请选择日期', trigger: 'change' }
+        ]
       },
-      {
-        value: '燃油型',
-        label: '燃油型'
-      }],
-      seriesMap: [],
-      carAddRules: {
-        seriesId: [{required: true, message: '请选择系列', trigger: 'change'}]
-      },
-      seriesId: ''
+      carTypeList: ['新能源', '燃油型'],
+      seriesMap: new Map()
     }
   },
   created () {
@@ -265,32 +296,42 @@ export default {
     },
     getSeriesIdForSeriesName (seriesName) {
       // this.getSeriesMap()
-      console.log('qqq ' + seriesName)
-      this.seriesMap.foreach((item) => {
-        // if (item.series)
-        console.log(item.seriesName)
-      })
+      for (var i = 0; i < this.seriesMap.length; i++) {
+        if (this.seriesMap[i].seriesName === seriesName) {
+          return this.seriesMap[i].seriesId
+        }
+      }
     },
     showEditCarDia (user) {
-      // console.log(user)
-      // this.getSeriesIdForSeriesName(user.seriesName)
+      this.form = {}
+      var id = this.getSeriesIdForSeriesName(user.seriesName)
       this.dialogFormVisibleEdit = true
       this.form = user
+      // console.log(this.form)
+      this.form.seriesId = id
+      this.form.carCreater = this.$store.state.username
+      this.form.carUpdater = this.$store.state.username
     },
     noEdit () {
       this.dialogFormVisibleEdit = false
       this.form = {}
+      this.getCarList()
     },
-    async editCar () {
-      const res = await this.$http.post(`/car/update`, this.form)
-      console.log(res)
-      if (res.data.code === 'SUCCESS') {
-        this.getCarList()
-        this.dialogFormVisibleEdit = false
-        this.$message.success('编辑成功')
-      } else {
-        this.$message.warning('编辑失败')
-      }
+    editCar (formName) {
+      this.$refs[formName].validate(async (valid) => {
+        if (valid) {
+          console.log(this.form)
+          const res = await this.$http.post(`/car/update`, this.form)
+          console.log(res)
+          if (res.data.code === 'SUCCESS') {
+            this.getCarList()
+            this.dialogFormVisibleEdit = false
+            this.$message.success('编辑成功')
+          } else {
+            this.$message.warning('编辑失败')
+          }
+        }
+      })
     },
     searchCarForSeriesName () {
       this.getCarList()
@@ -301,9 +342,6 @@ export default {
     },
     async getSeriesMap () {
       const res = await this.$http.get(`/series/getSeriesIdAndName`)
-      console.log(res)
-      // console.log(res.data.data)
-      // console.log(this.seriesMap)
       if (res.data.code === 'SUCCESS') {
         this.seriesMap = res.data.data
       }
@@ -314,40 +352,40 @@ export default {
         this.getCarList()
       }
     },
-    async addCar () {
-      console.log(this.form)
-      // this.getSeriesMap()
-      // this.form
-      const res = await this.$http.post(`/car/add`, this.form)
-      if (res.data.code === 'SUCCESS') {
-        this.$message.success('添加成功')
-        this.getCarList()
-        this.form = {}
-        this.dialogFormVisibleAdd = false
-      } else {
-        this.$message.warning('添加失败')
-      }
+    addCar (formName) {
+      this.$refs[formName].validate(async (valid) => {
+        if (valid) {
+          this.form.carCreater = this.$store.state.username
+          const res = await this.$http.post(`/car/add`, this.form)
+          if (res.data.code === 'SUCCESS') {
+            this.$message.success('添加成功')
+            this.getCarList()
+            this.form = {}
+            this.dialogFormVisibleAdd = false
+          } else {
+            this.$message.warning('添加失败')
+          }
+        }
+      })
     },
     loadCarList () {
       this.getCarList()
     },
     async getCarList () {
-      console.log('pagenum:' + this.pageNum + 'pagesize:' + this.pageSize)
       const res = await this.$http.get(`/car/query?query=${this.query}&pageNum=${this.pageNum}&pageSize=${this.pageSize}`)
-      console.log(res)
       if (res.data.code === 'SUCCESS') {
         this.carList = res.data.data.content
         this.total = res.data.data.totalSize
       }
+      console.log(res.data.data.content)
+      console.log(this.carList)
     },
     handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
       this.pageSize = val
       this.pageNum = 1
       this.getCarList()
     },
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
       this.pageNum = val
       this.getCarList()
     }

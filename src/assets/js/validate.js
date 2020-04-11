@@ -1,8 +1,8 @@
 // 手机号验证
 export function validatePhoneTwo (rule, value, callback) {
-  const reg = /^((0\d{2,3}-\d{7,8})|(1[34578]\d{9}))$/
+  const reg = /^[1][3-9][0-9]{9}$/
   if (value === '' || value === undefined || value === null) {
-    callback(new Error('请输入手机号码或固定号码'))
+    callback(new Error('请输入手机号码'))
   } else {
     if ((!reg.test(value)) && value !== '') {
       callback(new Error('请输入正确的手机号码或者固话号码'))

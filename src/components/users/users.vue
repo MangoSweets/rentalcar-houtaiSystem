@@ -188,6 +188,7 @@ export default {
     showAddUserDialog () {
       this.dialogFormVisibleAdd = true
       this.form = {}
+      this.getUserList()
     },
     async changeStatus (user) {
       const res = await this.$http.get(`/user/changestatus?userId=${user.userId}&status=${user.userStatus}`)
