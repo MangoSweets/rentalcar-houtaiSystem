@@ -93,8 +93,8 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="pageNum"
-      :page-sizes="[1, 2, 4, 8]"
-      :page-size="2"
+      :page-sizes="[10, 20, 30, 40]"
+      :page-size="10"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
     >
@@ -178,7 +178,7 @@ export default {
       userList: [],
       total: -1,
       pageNum: 1,
-      pagesize: 2
+      pagesize: 10
     }
   },
   created () {
@@ -291,18 +291,15 @@ export default {
       }
     },
     handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
       this.pagesize = val
       this.pageNum = 1
       this.getUserList()
     },
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
       this.pageNum = val
       this.getUserList()
     },
     searchUser () {
-      console.log(this.query)
       this.getUserList()
     },
     loadUserList () {

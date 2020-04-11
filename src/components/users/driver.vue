@@ -82,8 +82,8 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="pageNum"
-      :page-sizes="[1, 2, 4, 8]"
-      :page-size="2"
+      :page-sizes="[10, 20, 30, 40]"
+      :page-size="10"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
     >
@@ -123,10 +123,6 @@
         </el-form-item>
         <el-form-item label="性别" :label-width="formLabelWidth" prop="drivingSex">
           <el-input v-model="form.drivingSex" autocomplete="off" disabled></el-input>
-          <!-- <el-select v-model="form.drivingSex" placeholder="请选择">
-            <el-option label="男"  value="男"> </el-option>
-            <el-option label="女"  value="女"> </el-option>
-          </el-select> -->
         </el-form-item>
         <el-form-item label="手机号码" :label-width="formLabelWidth" prop="drivingTelephone">
           <el-input v-model="form.drivingTelephone" autocomplete="off"></el-input>
@@ -183,7 +179,7 @@ export default {
       driverList: [],
       total: -1,
       pageNum: 1,
-      pagesize: 2
+      pagesize: 10
     }
   },
   created () {
@@ -284,13 +280,11 @@ export default {
       }
     },
     handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
       this.pagesize = val
       this.pageNum = 1
       this.getDriverList()
     },
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
       this.pageNum = val
       this.getDriverList()
     },

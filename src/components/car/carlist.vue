@@ -93,8 +93,8 @@
     @size-change="handleSizeChange"
     @current-change="handleCurrentChange"
     :current-page="pageNum"
-    :page-sizes="[2, 4, 6, 8]"
-    :page-size="2"
+    :page-sizes="[10, 20, 30, 40]"
+    :page-size="10"
     layout="total, sizes, prev, pager, next, jumper"
     :total="total">
   </el-pagination>
@@ -224,7 +224,7 @@ export default {
     return {
       query: '',
       pageNum: 1,
-      pageSize: 2,
+      pageSize: 10,
       total: -1,
       dialogFormVisibleAdd: false,
       dialogFormVisibleEdit: false,
@@ -377,8 +377,6 @@ export default {
         this.carList = res.data.data.content
         this.total = res.data.data.totalSize
       }
-      console.log(res.data.data.content)
-      console.log(this.carList)
     },
     handleSizeChange (val) {
       this.pageSize = val

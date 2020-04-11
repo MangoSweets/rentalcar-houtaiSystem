@@ -98,8 +98,8 @@
     @size-change="handleSizeChange"
     @current-change="handleCurrentChange"
     :current-page="pageNum"
-    :page-sizes="[2, 4, 6, 8]"
-    :page-size="2"
+    :page-sizes="[10, 20, 30, 40]"
+    :page-size="10"
     layout="total, sizes, prev, pager, next, jumper"
     :total="total">
   </el-pagination>
@@ -257,7 +257,7 @@ export default {
       seatTypeList: ['真皮', '织物'],
       query: '',
       pageNum: 1,
-      pageSize: 2,
+      pageSize: 10,
       total: -1,
       dialogFormVisibleAdd: false,
       dialogFormVisibleEdit: false,

@@ -84,8 +84,8 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="pageNum"
-      :page-sizes="[1, 2, 4, 8]"
-      :page-size="2"
+      :page-sizes="[10, 20, 30, 40]"
+      :page-size="10"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
     >
@@ -230,7 +230,7 @@ export default {
       nameList: [],
       total: -1,
       pageNum: 1,
-      pagesize: 2
+      pagesize: 10
     }
   },
   created () {
@@ -301,8 +301,6 @@ export default {
         this.nameList = res.data.data
         return res.data.data
       }
-      console.log(this.nameList)
-      // return res.data.data
     },
     async changeStatus (order) {
       const res = await this.$http.get(`/order/changestatus?orderId=${order.orderId}&status=${order.status}`)
@@ -386,24 +384,18 @@ export default {
       if (res.data.code === 'SUCCESS') {
         this.orderList = res.data.data.content
         this.total = res.data.data.totalSize
-        console.log(this.orderList)
-        // this.pageSize = res.data.data.pageSize
-        // this.$message.success('ok')
       }
     },
     handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
       this.pagesize = val
       this.pageNum = 1
       this.getOrderList()
     },
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
       this.pageNum = val
       this.getOrderList()
     },
     searchOrder () {
-      console.log(this.query)
       this.getOrderList()
     },
     loadOrderList () {
