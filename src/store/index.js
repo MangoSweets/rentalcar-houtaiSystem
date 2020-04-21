@@ -30,10 +30,7 @@ export default new vuex.Store({
   actions: {// 调用mutations去处理修改仓库
   },
   getters: {
-    getSortage: function (state) {
-      if (!state.token) {
-        state.token = JSON.parse(localStorage.getItem(key))
-      }
+    getToken (state) {
       return state.token
     }
   }// 数据包装，过滤器

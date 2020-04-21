@@ -27,8 +27,6 @@ router.beforeEach((to, from, next) => {
     next()
   } else {
     let token = localStorage.token
-    // console.log('12333333')
-    // console.log(token)
     if (token === 'null' || token === '' || token === undefined) {
       next('/')
     } else {

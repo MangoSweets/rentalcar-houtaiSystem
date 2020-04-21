@@ -28,6 +28,11 @@
     <el-table :data="carList">
       <el-table-column type="index" label="#" width="60"> </el-table-column>
       <el-table-column prop="seriesName" label="系列名" width="100"></el-table-column>
+      <el-table-column prop="imageUrl" label="图片" width="200">
+        <template slot-scope="carList">
+          <img id="img" :src="carList.row.imageUrl" class="picture"/>
+        </template>
+      </el-table-column>
       <el-table-column prop="carType" label="汽车类型" width="100"></el-table-column>
       <el-table-column prop="plateNumber" label="车牌号" width="120"> </el-table-column>
       <el-table-column prop="price" label="价格" width="120"> </el-table-column>
@@ -111,6 +116,26 @@
             :value="item.seriesId">
             </el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="汽车图片" :label-width="formLabelWidth" prop="imageUrl">
+          <el-upload
+          ref="upload"
+          action="http://localhost:8081/upload"
+          name="picture"
+          list-type="picture-card"
+          :headers="myHeader"
+          :limit="1"
+          :file-list="fileList"
+          :on-exceed="onExceed"
+          :before-upload="beforeUpload"
+          :on-preview="handlePreview"
+          :on-success="handleSuccess"
+          :on-remove="handleRemove">
+          <i class="el-icon-plus"></i>
+          </el-upload>
+          <el-dialog :visible.sync="dialogVisible">
+            <img width="100%" :src="dialogImageUrl" alt="">
+          </el-dialog>
         </el-form-item>
         <el-form-item label="汽车类型" :label-width="formLabelWidth" prop="carType">
           <el-select v-model="form.carType" placeholder="请选择">
@@ -222,6 +247,11 @@ export default {
   name: 'carManager',
   data () {
     return {
+      dialogImageUrl: '',
+      dialogVisible: false,
+      // 图片列表（用于在上传组件中回显图片）
+      fileList: [{name: '', url: ''}],
+      myHeader: {'Authorization': this.getToken().replace('"', '')},
       query: '',
       pageNum: 1,
       pageSize: 10,
@@ -238,7 +268,8 @@ export default {
         price: '',
         plateNumber: '',
         productStartTime: '',
-        productEndTime: ''
+        productEndTime: '',
+        imageUrl: ''
       },
       rules: {
         seriesId: [
@@ -269,6 +300,58 @@ export default {
     this.getSeriesMap()
   },
   methods: {
+    getToken () {
+      return localStorage.getItem('token')
+    },
+    // 文件上传成功的钩子函数
+    handleSuccess (res, file) {
+      this.$message({
+        type: 'info',
+        message: '图片上传成功',
+        duration: 2000
+      })
+      console.log(res)
+      console.log('qqq')
+      console.log(file)
+      if (file.response.code === 'SUCCESS') {
+        this.form.imageUrl = file.response.data // 将返回的文件储存路径赋值picture字段
+      }
+    },
+    // 删除文件之前的钩子函数
+    handleRemove (file, fileList) {
+      this.$message({
+        type: 'info',
+        message: '已删除原有图片',
+        duration: 2000
+      })
+    },
+    // 点击列表中已上传的文件事的钩子函数
+    handlePreview (file) {
+    },
+    // 上传的文件个数超出设定时触发的函数
+    onExceed (files, fileList) {
+      this.$message({
+        type: 'info',
+        message: '最多只能上传一个图片',
+        duration: 2000
+      })
+    },
+    // 文件上传前的前的钩子函数
+    // 参数是上传的文件，若返回false，或返回Primary且被reject，则停止上传
+    beforeUpload (file) {
+      const isJPG = file.type === 'image/jpeg'
+      const isGIF = file.type === 'image/gif'
+      const isPNG = file.type === 'image/png'
+      const isBMP = file.type === 'image/bmp'
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!isJPG && !isGIF && !isPNG && !isBMP) {
+        this.$message.error('上传图片必须是JPG/GIF/PNG/BMP 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传图片大小不能超过 2MB!')
+      }
+      return (isJPG || isBMP || isGIF || isPNG) && isLt2M
+    },
     showDeleteCarMsgBox (carId) {
       this.$confirm('是否删除该用户?', '提示', {
         confirmButtonText: '确定',
@@ -355,6 +438,7 @@ export default {
     addCar (formName) {
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
+          console.log(this.form)
           this.form.carCreater = this.$store.state.username
           const res = await this.$http.post(`/car/add`, this.form)
           if (res.data.code === 'SUCCESS') {
@@ -373,9 +457,18 @@ export default {
     },
     async getCarList () {
       const res = await this.$http.get(`/car/query?query=${this.query}&pageNum=${this.pageNum}&pageSize=${this.pageSize}`)
+      console.log(res)
       if (res.data.code === 'SUCCESS') {
         this.carList = res.data.data.content
         this.total = res.data.data.totalSize
+        var baseUrl = 'http://localhost:8081'
+        for (let i = 0; i < this.carList.length; i++) {
+          console.log(this.carList[i].imageUrl)
+          if (this.carList[i].imageUrl != null) {
+            console.log(this.carList[i].imageUrl)
+            this.carList[i].imageUrl = baseUrl + this.carList[i].imageUrl
+          }
+        }
       }
     },
     handleSizeChange (val) {
@@ -400,5 +493,13 @@ export default {
 }
 .inputSearch {
   width: 300px;
+}
+.picture {
+  width: 100px;
+  height: 100px;
+}
+img[src=""],img:not([src]){
+ opacity:0;
+
 }
 </style>
