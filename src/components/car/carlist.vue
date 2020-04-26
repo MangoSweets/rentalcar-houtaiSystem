@@ -125,7 +125,6 @@
           list-type="picture-card"
           :headers="myHeader"
           :limit="1"
-          :file-list="fileList"
           :on-exceed="onExceed"
           :before-upload="beforeUpload"
           :on-preview="handlePreview"
@@ -203,6 +202,25 @@
               :value="item">
             </el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="汽车图片" :label-width="formLabelWidth" prop="imageUrl">
+          <el-upload
+          ref="upload"
+          action="http://localhost:8081/upload"
+          name="picture"
+          list-type="picture-card"
+          :headers="myHeader"
+          :limit="1"
+          :on-exceed="onExceed"
+          :before-upload="beforeUpload"
+          :on-preview="handlePreview"
+          :on-success="handleSuccess"
+          :on-remove="handleRemove">
+          <i class="el-icon-plus"></i>
+          </el-upload>
+          <el-dialog :visible.sync="dialogVisible">
+            <img width="100%" :src="dialogImageUrl" alt="">
+          </el-dialog>
         </el-form-item>
         <el-form-item label="车牌号" :label-width="formLabelWidth" prop="plateNumber">
           <el-input v-model="form.plateNumber"  autocomplete="off"></el-input>
@@ -396,6 +414,7 @@ export default {
       this.form.carUpdater = this.$store.state.username
     },
     noEdit () {
+      console.log(this.form)
       this.dialogFormVisibleEdit = false
       this.form = {}
       this.getCarList()
