@@ -188,7 +188,7 @@
       </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisibleAdd = false">取 消</el-button>
+        <el-button @click="dialogFormVisibleEdit = false">取 消</el-button>
         <el-button type="primary" @click="editOrder('form')">确 定</el-button>
       </div>
     </el-dialog>
@@ -334,7 +334,7 @@ export default {
       this.form = order
     },
     showDeleteOrderMsgBox (orderId) {
-      this.$confirm('是否删除该用户?', '提示', {
+      this.$confirm('是否删除该订单?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'

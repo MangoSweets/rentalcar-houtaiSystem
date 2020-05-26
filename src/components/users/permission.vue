@@ -173,7 +173,7 @@ export default {
       this.form = permission
     },
     showDeletePermissionMsgBox (permissionId) {
-      this.$confirm('是否删除该角色?', '提示', {
+      this.$confirm('是否删除该权限?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'

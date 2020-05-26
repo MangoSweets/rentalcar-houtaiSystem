@@ -371,7 +371,7 @@ export default {
       return (isJPG || isBMP || isGIF || isPNG) && isLt2M
     },
     showDeleteCarMsgBox (carId) {
-      this.$confirm('是否删除该用户?', '提示', {
+      this.$confirm('是否删除该汽车?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -406,12 +406,12 @@ export default {
     showEditCarDia (user) {
       this.form = {}
       var id = this.getSeriesIdForSeriesName(user.seriesName)
-      this.dialogFormVisibleEdit = true
       this.form = user
-      // console.log(this.form)
       this.form.seriesId = id
+      this.form.imageUrl = this.form.imageUrl.replace('http://localhost:8081', '')
       this.form.carCreater = this.$store.state.username
       this.form.carUpdater = this.$store.state.username
+      this.dialogFormVisibleEdit = true
     },
     noEdit () {
       console.log(this.form)

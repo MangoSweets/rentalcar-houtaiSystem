@@ -76,17 +76,6 @@
               <span>订单列表</span>
             </el-menu-item>
           </el-submenu>
-          <!-- 5 -->
-          <el-submenu index="5">
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>数据统计</span>
-            </template>
-            <el-menu-item index="5-1">
-              <i class="el-icon-menu"></i>
-              <span>选项1</span>
-            </el-menu-item>
-          </el-submenu>
         </el-menu>
       </el-aside>
       <el-main class="main">

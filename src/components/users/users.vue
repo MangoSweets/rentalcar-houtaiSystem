@@ -79,6 +79,7 @@
             circle
           ></el-button>
           <el-button
+            @click="showRoleMsgBox(scope.row.userId)"
             size="mini"
             plain
             type="success"
@@ -142,6 +143,28 @@
         <el-button type="primary" @click="editUser('form')">确 定</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="赋予角色" :visible.sync="dialogFormVisibleRole" center width="30%">
+      <el-form :model="roleForm" status-icon>
+        <el-form-item label="当前角色" :label-width="formLabelWidth">
+          <el-input disabled v-model="roleForm.roleName"  autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="赋予角色" :label-width="formLabelWidth">
+          <el-select v-model="roleForm.roleId" placeholder="请选择">
+            <el-option
+              v-for="item in roleList"
+              :key="item.roleId"
+              :label="item.roleName"
+              :value="item.roleId">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleRole=false">取 消</el-button>
+        <el-button type="primary" @click="editRole()">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -153,6 +176,7 @@ export default {
     return {
       dialogFormVisibleAdd: false,
       dialogFormVisibleEdit: false,
+      dialogFormVisibleRole: false,
       formLabelWidth: '120px',
       form: {
         username: '',
@@ -174,6 +198,13 @@ export default {
           { validator: validateEMail, trigger: 'blur' }
         ]
       },
+      roleForm: {
+        userId: '',
+        roleId: '',
+        roleName: '',
+        roleIdentity: ''
+      },
+      roleList: [],
       query: '',
       userList: [],
       total: -1,
@@ -185,6 +216,35 @@ export default {
     this.getUserList()
   },
   methods: {
+    showRoleMsgBox (id) {
+      this.dialogFormVisibleRole = true
+      this.roleForm.roleId = ''
+      this.getUserRole(id)
+      this.getRoleList()
+    },
+    async getUserRole (id) {
+      this.roleForm.userId = id
+      const res = await this.$http.get(`/user/getMyRole?userId=${id}`)
+      if (res.data.code === 'SUCCESS') {
+        this.roleForm.roleName = res.data.data.roleName
+      }
+    },
+    async getRoleList () {
+      const res = await this.$http.get(`/user/getRoleInfo`)
+      if (res.data.code === 'SUCCESS') {
+        this.roleList = res.data.data
+      }
+    },
+    async editRole () {
+      console.log(this.roleForm)
+      const res = await this.$http.get(`/user/updateRole?userId=${this.roleForm.userId}&roleId=${this.roleForm.roleId}`)
+      if (res.data.code === 'SUCCESS') {
+        this.$message.success('赋予成功')
+        this.dialogFormVisibleRole = false
+      } else {
+        this.$message.warning('赋予失败')
+      }
+    },
     showAddUserDialog () {
       this.dialogFormVisibleAdd = true
       this.form = {}

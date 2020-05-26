@@ -36,7 +36,8 @@ export default {
   methods: {
     // es7新语法，async,await 让asios异步操作看起来像同步
     async handleLogin () {
-      const res = await this.$http.post('/login', this.formdata)
+      const res = await this.$http.post('/manager/login', this.formdata)
+      console.log(res)
       if (res.data.code === 'SUCCESS') {
         // 登录成功，保存token
         // localStorage.setItem('token', res.headers.authorization)
@@ -48,9 +49,9 @@ export default {
         this.$store.commit('modifyName', this.formdata.username)
         this.$router.push(
           {name: 'home', path: '/home', params: count})
-        this.$message.success(res.data.message)
+        this.$message.success(res.data.params[0])
       } else {
-        this.$message.error(res.data.message)
+        this.$message.error(res.data.params[0])
       }
     }
   }
